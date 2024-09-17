@@ -1,37 +1,39 @@
-import { Tabs } from 'expo-router';
-import React from 'react';
+import { Tabs } from "expo-router";
+import Feather from "@expo/vector-icons/Feather";
 
-import { TabBarIcon } from '@/components/navigation/TabBarIcon';
-import { Colors } from '@/constants/Colors';
-import { useColorScheme } from '@/hooks/useColorScheme';
-
-export default function TabLayout() {
-  const colorScheme = useColorScheme();
-
-  return (
-    <Tabs
-      screenOptions={{
-        tabBarActiveTintColor: Colors[colorScheme ?? 'light'].tint,
+const Layout = () => (
+  <Tabs
+    initialRouteName="index"
+    screenOptions={{
+      tabBarActiveTintColor: "white",
+      tabBarInactiveTintColor: "white",
+      tabBarActiveBackgroundColor: "grey",
+      tabBarStyle: {
+        backgroundColor: "#333333",
+        borderRadius: 5,
+      },
+      tabBarItemStyle: {
+        borderRadius: 10,
+      },
+    }}
+  >
+    <Tabs.Screen
+      name="home"
+      options={{
+        title: "Home",
         headerShown: false,
-      }}>
-      <Tabs.Screen
-        name="index"
-        options={{
-          title: 'Home',
-          tabBarIcon: ({ color, focused }) => (
-            <TabBarIcon name={focused ? 'home' : 'home-outline'} color={color} />
-          ),
-        }}
-      />
-      <Tabs.Screen
-        name="explore"
-        options={{
-          title: 'Explore',
-          tabBarIcon: ({ color, focused }) => (
-            <TabBarIcon name={focused ? 'code-slash' : 'code-slash-outline'} color={color} />
-          ),
-        }}
-      />
-    </Tabs>
-  );
-}
+        tabBarIcon: () => <Feather name="target" size={24} color="white" />,
+      }}
+    />
+    <Tabs.Screen
+      name="upload"
+      options={{
+        title: "Upload",
+        headerShown: false,
+        tabBarIcon: () => <Feather name="upload" size={24} color="white" />,
+      }}
+    />
+  </Tabs>
+);
+
+export default Layout;
