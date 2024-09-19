@@ -5,7 +5,7 @@ import { StyleSheet, View } from "react-native";
 export default function App() {
   return (
     <View style={styles.container}>
-      <MapView style={styles.map} />
+      <MapView style={styles.map} provider="google" />
     </View>
   );
 }
