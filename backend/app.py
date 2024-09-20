@@ -9,7 +9,7 @@ import numpy as np
 import base64
 app = Flask(__name__)
 api = Api(app)
-# CORS(app)
+CORS(app)
 class FootPath(Resource):
     def post(self):
         try:
@@ -17,10 +17,11 @@ class FootPath(Resource):
                 return jsonify({'Error': 'Image not received'})
 
             image = request.files['image']
-            image_path = os.path.join('uploads', image.filename)
+            image_path = os.path.join('backend','uploads', image.filename)
+            print(image_path)
             image.save(image_path)
 
-            rf = Roboflow(api_key="")
+            rf = Roboflow(api_key="M9rjZCp90i9HHyoDgdEC")
             project = rf.workspace().project("orr")
             model = project.version(1).model
 
@@ -45,7 +46,7 @@ class FootPath(Resource):
 
         except Exception as e:
             print(f"Error processing request: {str(e)}")
-            return jsonify({'Error': str(e)}), 500
+            return jsonify({'Error': str(e)})
 
 
 api.add_resource(FootPath,'/upload-image')
