@@ -1,12 +1,10 @@
 from flask import Flask,request,jsonify
 from flask_restful import Api,Resource
 from roboflow import Roboflow
-from flask_cors import CORS
 import supervision as sv
 import cv2
 import os
 import numpy as np
-import base64
 app = Flask(__name__)
 api = Api(app)
 # CORS(app)
@@ -17,10 +15,10 @@ class FootPath(Resource):
                 return jsonify({'Error': 'Image not received'})
 
             image = request.files['image']
-            image_path = os.path.join('uploads', image.filename)
+            image_path = os.path.join('backend/uploads', image.filename)
             image.save(image_path)
 
-            rf = Roboflow(api_key="")
+            rf = Roboflow(api_key="DlaIFC6M80qAjOYFA62S")
             project = rf.workspace().project("orr")
             model = project.version(1).model
 
