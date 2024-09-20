@@ -7,7 +7,7 @@ import os
 import numpy as np
 app = Flask(__name__)
 api = Api(app)
-CORS(app)
+# CORS(app)
 class FootPath(Resource):
     def post(self):
         try:
