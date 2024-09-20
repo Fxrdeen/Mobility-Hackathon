@@ -1,8 +1,10 @@
-import { useState } from "react";
-import { StyleSheet, Button, Image, Text } from "react-native";
+import { useEffect, useState } from "react";
+import { StyleSheet, Button, Image, Text, Alert } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import * as FileSystem from "expo-file-system";
 import * as ImagePicker from "expo-image-picker";
+import * as Location from "expo-location";
+import { supabase } from "@/supabase";
 const Upload = () => {
   const [image, setImage] = useState<string | null>(null);
   const [reviewResult, setReviewResult] = useState<string | null>(null);
@@ -36,7 +38,7 @@ const Upload = () => {
       name: "image.jpg",
     } as any);
     try {
-      const response = await fetch("", {
+      const response = await fetch("http://192.168.29.95:3000/upload-image", {
         method: "POST",
         body: formData,
         headers: {
@@ -53,11 +55,14 @@ const Upload = () => {
 
       const data = await response.json();
       setReviewResult(data.Percentage);
+      // await supabaseFunc();
     } catch (error) {
       console.error("Error uploading video:", error);
       alert("Error uploading video");
     }
   };
+  const [location, setLocation] = useState(null);
+  const [loading, setLoading] = useState(true);
   return (
     <SafeAreaView style={styles.container}>
       <Button title="Pick an image from camera roll" onPress={pickImage} />
