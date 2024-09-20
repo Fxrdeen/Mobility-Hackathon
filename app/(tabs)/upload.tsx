@@ -36,7 +36,7 @@ const Upload = () => {
       name: "image.jpg",
     } as any);
     try {
-      const response = await fetch("http://192.168.29.95:3000/upload-image", {
+      const response = await fetch("", {
         method: "POST",
         body: formData,
         headers: {

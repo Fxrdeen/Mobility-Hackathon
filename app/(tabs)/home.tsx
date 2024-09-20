@@ -7,6 +7,23 @@ import MapView from "react-native-maps";
 import ReactNativeModal from "react-native-modal";
 import { SafeAreaView } from "react-native-safe-area-context";
 import AntDesign from "@expo/vector-icons/AntDesign";
+import MapComponent from "@/components/MapView";
+const roadData = [
+  {
+    coordinates: [
+      { latitude: 12.9716, longitude: 77.5946 }, 
+      { latitude: 12.9756, longitude: 77.5986 }, 
+    ],
+    score: 10, 
+  },
+  {
+    coordinates: [
+      { latitude: 12.9806, longitude: 77.5996 }, 
+      { latitude: 12.9826, longitude: 77.6016 },
+    ],
+    score: 80,
+  },
+];
 const Home = () => {
   const [location, setLocation] = useState("");
   const [showSuccessModal, setShowSuccessModal] = useState(false);
@@ -14,9 +31,10 @@ const Home = () => {
   return (
     <SafeAreaView className="flex-1">
       <View className="h-[80%] w-full mb-2">
-        <MapView
-          className="w-[100%] h-[100%] border-b-2"
-          showsUserLocation={true}
+        <MapComponent
+          //className="w-[100%] h-[100%] border-b-2"
+          //showsUserLocation={true}
+          roadData = {roadData}
         />
       </View>
       <GoogleTextInput
