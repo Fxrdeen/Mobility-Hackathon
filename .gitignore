@@ -18,3 +18,8 @@ web-build/
 
 expo-env.d.ts
 # @end expo-cli
+
+/backend/bin
+/backend/include
+/backend/lib
+/backend/share
