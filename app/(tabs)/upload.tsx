@@ -5,9 +5,13 @@ import * as FileSystem from "expo-file-system";
 import * as ImagePicker from "expo-image-picker";
 import * as Location from "expo-location";
 import { supabase } from "@/supabase";
+import useStore from "@/store";
 const Upload = () => {
   const [image, setImage] = useState<string | null>(null);
   const [reviewResult, setReviewResult] = useState<string | null>(null);
+  const latitude = useStore((state) => state.latitude);
+  const longitude = useStore((state) => state.longitude);
+
   const pickImage = async () => {
     let result = await ImagePicker.launchImageLibraryAsync({
       mediaTypes: ImagePicker.MediaTypeOptions.All,
@@ -53,9 +57,15 @@ const Upload = () => {
         return;
       }
 
-      const data = await response.json();
-      setReviewResult(data.Percentage);
-      // await supabaseFunc();
+      const dat = await response.json();
+      setReviewResult(dat.Percentage);
+
+      const { data, error } = await supabase
+        .from("location-footpath")
+        .insert([
+          { latitude: latitude, longitude: longitude, score: dat.Percentage },
+        ])
+        .select();
     } catch (error) {
       console.error("Error uploading video:", error);
       alert("Error uploading video");

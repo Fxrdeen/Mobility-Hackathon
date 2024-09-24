@@ -2,6 +2,7 @@ Flask
 roboflow 
 supervision 
 opencv-python
+numpy
 Flask_RESTful
 Flask-SQLAlchemy==2.4.3
 itsdangerous==1.1.0

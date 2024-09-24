@@ -1,24 +1,26 @@
 import CustomButton from "@/components/CustomButton";
 import GoogleTextInput from "@/components/GoogleTextInput";
 import { icons, images } from "@/constants";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Image, Text, TouchableOpacity, View } from "react-native";
 import MapView from "react-native-maps";
 import ReactNativeModal from "react-native-modal";
 import { SafeAreaView } from "react-native-safe-area-context";
 import AntDesign from "@expo/vector-icons/AntDesign";
 import MapComponent from "@/components/MapView";
+import { getSupabase } from "@/server";
+
 const roadData = [
   {
     coordinates: [
-      { latitude: 12.9716, longitude: 77.5946 }, 
-      { latitude: 12.9756, longitude: 77.5986 }, 
+      { latitude: 12.9716, longitude: 77.5946 },
+      { latitude: 12.9756, longitude: 77.5986 },
     ],
-    score: 10, 
+    score: 10,
   },
   {
     coordinates: [
-      { latitude: 12.9806, longitude: 77.5996 }, 
+      { latitude: 12.9806, longitude: 77.5996 },
       { latitude: 12.9826, longitude: 77.6016 },
     ],
     score: 80,
@@ -27,14 +29,39 @@ const roadData = [
 const Home = () => {
   const [location, setLocation] = useState("");
   const [showSuccessModal, setShowSuccessModal] = useState(false);
+  const [ldata, setLdata] = useState(null);
   const onPress = () => setShowSuccessModal(true);
+  const road = getSupabase();
+  useEffect(() => {
+    const func = async () => {
+      const road = await getSupabase();
+      setLdata(road);
+    };
+    func();
+  }, []);
+  console.log(ldata);
+  if (ldata != null) {
+    roadData.push({
+      coordinates: [
+        {
+          latitude: ldata[0].latitude!,
+          longitude: ldata[0].longitude!,
+        },
+        {
+          latitude: ldata[0].latitude + 0.005,
+          longitude: ldata[0].longitude + 0.005,
+        },
+      ],
+      score: ldata[0].score,
+    });
+  }
   return (
     <SafeAreaView className="flex-1">
       <View className="h-[80%] w-full mb-2">
         <MapComponent
           //className="w-[100%] h-[100%] border-b-2"
           //showsUserLocation={true}
-          roadData = {roadData}
+          roadData={roadData}
         />
       </View>
       <GoogleTextInput

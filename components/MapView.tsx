@@ -3,6 +3,7 @@ import { ActivityIndicator, Alert, StyleSheet, View } from "react-native";
 import MapView, { Marker, Polyline, PROVIDER_GOOGLE } from "react-native-maps";
 // Define a type for coordinates (latitude, longitude)
 import * as Location from "expo-location";
+import useStore from "@/store";
 
 type Coordinate = {
   latitude: number;
@@ -32,6 +33,10 @@ const MapComponent: React.FC<MapComponentProps> = ({ roadData }) => {
   };
   const [location, setLocation] = useState(null);
   const [loading, setLoading] = useState(true);
+  const setLatitude = useStore((state) => state.setLatitude);
+  const latitude = useStore((state) => state.latitude);
+  const longitude = useStore((state) => state.longitude);
+  const setLongitude = useStore((state) => state.setLongitude);
 
   useEffect(() => {
     (async () => {
@@ -51,6 +56,8 @@ const MapComponent: React.FC<MapComponentProps> = ({ roadData }) => {
         latitudeDelta: 0.0922,
         longitudeDelta: 0.0421,
       });
+      setLatitude(location.coords.latitude!);
+      setLongitude(location.coords.longitude!);
       setLoading(false);
     })();
   }, []);
