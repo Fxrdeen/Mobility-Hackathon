@@ -21,12 +21,15 @@ class FootPath(Resource):
         try:
             if 'image' not in request.files:
                 return jsonify({'Error': 'Image not received'})
-
+            # print(request.files["electric"])
             image = request.files['image']
             image_path = os.path.join(app.config['UPLOAD_FOLDER'], image.filename)
             print(image_path)
             image.save(image_path)
+            electric = request.form.get('electric') == 'true'  # Convert string 'true'/'false' to boolean
+            open_drain = request.form.get('openDrain') == 'true'  # Convert string 'true'/'false' to boolean
 
+            print(f"Electric: {electric}, OpenDrain: {open_drain}")
             rf = Roboflow(api_key="M9rjZCp90i9HHyoDgdEC")
             project = rf.workspace().project("orr")
             model = project.version(1).model

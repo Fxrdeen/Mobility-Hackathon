@@ -5,12 +5,12 @@ const Layout = () => (
   <Tabs
     initialRouteName="index"
     screenOptions={{
-      tabBarActiveTintColor: "white",
+      tabBarActiveTintColor: "yellow",
       tabBarInactiveTintColor: "white",
-      tabBarActiveBackgroundColor: "grey",
+
       tabBarStyle: {
-        backgroundColor: "#333333",
         borderRadius: 5,
+        backgroundColor: "black",
       },
       tabBarItemStyle: {
         borderRadius: 10,
@@ -22,7 +22,9 @@ const Layout = () => (
       options={{
         title: "Home",
         headerShown: false,
-        tabBarIcon: () => <Feather name="target" size={24} color="white" />,
+        tabBarIcon: ({ color }) => (
+          <Feather name="target" size={24} color={color} />
+        ),
       }}
     />
     <Tabs.Screen
@@ -30,7 +32,9 @@ const Layout = () => (
       options={{
         title: "Upload",
         headerShown: false,
-        tabBarIcon: () => <Feather name="upload" size={24} color="white" />,
+        tabBarIcon: ({ color }) => (
+          <Feather name="upload" size={24} color={color} />
+        ),
       }}
     />
   </Tabs>

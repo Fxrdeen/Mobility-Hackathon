@@ -56,7 +56,7 @@ const Home = () => {
     });
   }
   return (
-    <SafeAreaView className="flex-1">
+    <SafeAreaView className="flex-1 bg-[#121212] p-5">
       <View className="h-[80%] w-full mb-2">
         <MapComponent
           //className="w-[100%] h-[100%] border-b-2"
