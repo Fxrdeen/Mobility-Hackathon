@@ -14,10 +14,11 @@ import * as ImagePicker from "expo-image-picker";
 import * as Location from "expo-location";
 import { supabase } from "@/supabase";
 import useStore from "@/store";
-import MapView ,{Marker} from "react-native-maps";
+import MapView, { Marker } from "react-native-maps";
 import AntDesign from "@expo/vector-icons/AntDesign";
 import { CheckBox } from "@rneui/themed";
 import { Slider } from "@rneui/themed";
+import { router, useNavigation } from "expo-router";
 const Upload = () => {
   const [image, setImage] = useState<string | null>(null);
   const [reviewResult, setReviewResult] = useState<string | null>(null);
@@ -29,6 +30,7 @@ const Upload = () => {
   const [checked2, setChecked2] = useState<boolean | null>(false);
   const [slider, setSlider] = useState<boolean | null>(false);
   const [endPoint, setEndPoint] = useState<any>(null);
+  const nav = useNavigation();
   const pickImage = async () => {
     let result = await ImagePicker.launchImageLibraryAsync({
       mediaTypes: ImagePicker.MediaTypeOptions.All,
@@ -48,7 +50,7 @@ const Upload = () => {
   };
   const getReview = async () => {
     setIsLoading(false);
-    console.log("endPoint: ",endPoint);
+    console.log("endPoint: ", endPoint);
     if (!image) {
       alert("Please select a video first");
       setIsLoading(true);
@@ -74,7 +76,7 @@ const Upload = () => {
     formData.append("electric", checked1 ? "true" : "false");
     formData.append("openDrain", checked2 ? "true" : "false");
     try {
-      const response = await fetch("http://192.168.29.95:3000/upload-image", {
+      const response = await fetch("http://192.168.103.134:3000/upload-image", {
         method: "POST",
         body: formData,
         headers: {
@@ -95,7 +97,13 @@ const Upload = () => {
       const { data, error } = await supabase
         .from("location-footpath")
         .insert([
-          { latitude: slatitude, longitude: slongitude, score: dat.Percentage, latitude_end: endPoint.latitude, longitude_end: endPoint.longitude },
+          {
+            latitude: slatitude,
+            longitude: slongitude,
+            score: dat.Percentage,
+            latitude_end: endPoint.latitude,
+            longitude_end: endPoint.longitude,
+          },
         ])
         .select();
       if (error) {
@@ -115,7 +123,6 @@ const Upload = () => {
     setEndPoint(event.nativeEvent.coordinate);
   };
   return (
-
     <SafeAreaView className="flex-1 bg-[#121212] p-5">
       <View className="mt-5 w-[95%] h-40 bg-gray-800 rounded-xl flex justify-center items-center self-center">
         {!name ? (
@@ -159,32 +166,42 @@ const Upload = () => {
         />
         {/* <Slider minimumValue={0} maximumValue={5} value={slider} /> */}
       </View>
+      {isLoading == true && (
+        <>
+          <Text className="text-white text-center text-lg font-bold">
+            Select End Point
+          </Text>
+          <MapView
+            style={{ flex: 1, marginTop: 10 }}
+            initialRegion={{
+              latitude: slatitude,
+              longitude: slongitude,
+              latitudeDelta: 0.0922,
+              longitudeDelta: 0.0421,
+            }}
+            onPress={handleMapPress}
+          >
+            <Marker
+              coordinate={{ latitude: slatitude, longitude: slongitude }}
+              image={require("@/assets/icons/spin.png")}
+              title="Starting Point"
+            />
+            {endPoint && (
+              <Marker
+                coordinate={endPoint}
+                image={require("@/assets/icons/epin.png")}
+                title="End Point"
+              />
+            )}
+          </MapView>
+        </>
+      )}
       <TouchableOpacity
         className="mt-5 h-10 flex justify-center items-center bg-gray-300 w-[95%] self-center text-center rounded-xl"
         onPress={getReview}
       >
         <Text className="text-center text-lg">Submit</Text>
       </TouchableOpacity>
-      <Text className="text-white mt-10 text-center">{reviewResult}</Text>
-
-      {isLoading==true && (
-        <>
-        <Text className="text-white text-center text-lg font-bold mt-5">Select End Point</Text>
-        <MapView
-          style={{ flex: 1, marginTop: 20 }}
-          initialRegion={{
-            latitude: slatitude,
-            longitude: slongitude,
-            latitudeDelta: 0.0922,
-            longitudeDelta: 0.0421,
-          }}
-          onPress={handleMapPress}
-        >
-          <Marker coordinate={{latitude: slatitude, longitude: slongitude } } image={require('@/assets/icons/spin.png')} title="Starting Point" />
-          {endPoint && <Marker coordinate={endPoint} image={require('@/assets/icons/epin.png')} title="End Point" />}
-        </MapView>
-        </>
-      )}
     </SafeAreaView>
   );
 };

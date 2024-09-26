@@ -7,13 +7,8 @@ const Layout = () => (
     screenOptions={{
       tabBarActiveTintColor: "yellow",
       tabBarInactiveTintColor: "white",
-
       tabBarStyle: {
-        borderRadius: 5,
         backgroundColor: "black",
-      },
-      tabBarItemStyle: {
-        borderRadius: 10,
       },
     }}
   >

@@ -49,7 +49,7 @@ const GoogleTextInput = ({
           language: "en",
         }}
         onPress={(data, details = null) => {
-          console.log(data, details);
+          console.log(JSON.stringify(details, null, 2));
         }}
         renderLeftButton={() => (
           <View className="justify-center items-center w-6 h-6">
