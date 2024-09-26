@@ -9,7 +9,7 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import AntDesign from "@expo/vector-icons/AntDesign";
 import MapComponent from "@/components/MapView";
 import { getSupabase } from "@/server";
-
+import useStore from "@/store";
 const roadData = [
   {
     coordinates: [
@@ -29,7 +29,15 @@ const roadData = [
 const Home = () => {
   const [location, setLocation] = useState("");
   const [showSuccessModal, setShowSuccessModal] = useState(false);
-  const [ldata, setLdata] = useState([]);
+  const [newlocation, setnewlocation] = useState<{
+    latitude: number;
+    longitude: number;
+  } | null>(null);
+  const Lat = useStore((state: any) => state.Lat);
+  const setLat = useStore((state: any) => state.setLat);
+  const Lng = useStore((state: any) => state.Lng);
+  const setLng = useStore((state: any) => state.setLng);
+  const [ldata, setLdata] = useState(null);
   const onPress = () => setShowSuccessModal(true);
   const road = getSupabase();
   useEffect(() => {
@@ -39,22 +47,25 @@ const Home = () => {
     };
     func();
   }, []);
+  const handleLocationSelect = (latitude: number, longitude: number) => {
+    setnewlocation({ latitude, longitude });
+    setLat(latitude);
+    setLng(longitude);
+  };
   console.log(ldata);
   if (ldata != null) {
-    ldata.map((item) => {
-      roadData.push({
-        coordinates: [
-          {
-            latitude: item.latitude!,
-            longitude: item.longitude!,
-          },
-          {
-            latitude: item.latitude_end,
-            longitude: item.longitude_end,
-          },
-        ],
-        score: item.score,
-      });
+    roadData.push({
+      coordinates: [
+        {
+          latitude: ldata[0].latitude!,
+          longitude: ldata[0].longitude!,
+        },
+        {
+          latitude: ldata[0].latitude + 0.005,
+          longitude: ldata[0].longitude + 0.005,
+        },
+      ],
+      score: ldata[0].score,
     });
   }
   return (
@@ -71,11 +82,13 @@ const Home = () => {
         textInputBackgroundColor="transparent"
         icon={icons.map}
         handlePress={() => {}}
+        onLocationSelect={handleLocationSelect}
       />
       <Text className="text-2xl">{location}</Text>
       <View className="flex items-center justify-center">
         <TouchableOpacity
           onPress={onPress}
+          onLocationSelect={handleLocationSelect}
           className="flex justify-center items-center bg-gray-400 rounded-xl w-44 h-20"
         >
           <Text className="text-white text-center text-2xl">Check Status</Text>
