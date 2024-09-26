@@ -18,7 +18,8 @@ web-build/
 
 expo-env.d.ts
 # @end expo-cli
-
+venv
+pyvenv.cfg
 /backend/bin
 /backend/include
 /backend/lib
