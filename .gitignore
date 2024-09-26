@@ -25,3 +25,4 @@ pyvenv.cfg
 /backend/lib
 /backend/share
 bun.lockb
+%ProgramData%
