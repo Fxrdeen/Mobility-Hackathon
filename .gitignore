@@ -24,5 +24,6 @@ pyvenv.cfg
 /backend/include
 /backend/lib
 /backend/share
+/backend/uploads/image.*
 bun.lockb
 %ProgramData%

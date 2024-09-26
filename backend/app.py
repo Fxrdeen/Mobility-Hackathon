@@ -29,9 +29,10 @@ class FootPath(Resource):
             image_path = os.path.join(app.config['UPLOAD_FOLDER'], image.filename)
             print(image_path)
             image.save(image_path)
-            electric = request.form.get('electric') == 'true'  # Convert string 'true'/'false' to boolean
-            open_drain = request.form.get('openDrain') == 'true'  # Convert string 'true'/'false' to boolean
-
+            electric = request.form.get('electric') == 'true'  
+            open_drain = request.form.get('openDrain') == 'true'
+            electric = int(electric)
+            open_drain = int(open_drain)
             print(f"Electric: {electric}, OpenDrain: {open_drain}")
             rf = Roboflow(api_key=os.getenv("ROBOFLOW_API_KEY"))
             project = rf.workspace().project("orr")
@@ -47,8 +48,8 @@ class FootPath(Resource):
             masks = detections.mask
             if len(masks) > 0:
                 totalPixels = sum(mask.size for mask in masks)
-                footpathPixels = np.count_nonzero(masks[0])  # Assuming you're using the first mask
-                footpathPercentage = (footpathPixels / totalPixels) * 100 if totalPixels else 0
+                footpathPixels = np.count_nonzero(masks[0]) 
+                footpathPercentage = (((footpathPixels / totalPixels) * 100) - 5*electric - 3*open_drain)+10 if totalPixels else 0
             else:
                 footpathPercentage = 0
 

@@ -3,7 +3,7 @@ import GoogleTextInput from "@/components/GoogleTextInput";
 import { icons, images } from "@/constants";
 import { useEffect, useState } from "react";
 import { Image, Text, TouchableOpacity, View } from "react-native";
-import MapView, {Marker} from "react-native-maps";
+import MapView, { Marker } from "react-native-maps";
 import ReactNativeModal from "react-native-modal";
 import { SafeAreaView } from "react-native-safe-area-context";
 import AntDesign from "@expo/vector-icons/AntDesign";
@@ -21,22 +21,23 @@ const roadData = [
   {
     coordinates: [
       { latitude: 12.888111427122361, longitude: 77.54338434280378 },
-      { latitude: 12.888765911321904,  longitude: 77.54361193578372 },
+      { latitude: 12.888765911321904, longitude: 77.54361193578372 },
     ],
     score: 80,
   },
-  
-  
 ];
 const Home = () => {
   const [location, setLocation] = useState("");
   const [showSuccessModal, setShowSuccessModal] = useState(false);
-  const [newlocation, setnewlocation] = useState<{latitude: number, longitude: number} | null>(null);
-  const Lat = useStore((state:any) => state.Lat);
-  const setLat = useStore((state:any) => state.setLat);
-  const Lng = useStore((state:any) => state.Lng);
-  const setLng = useStore((state:any) => state.setLng);
-  const [ldata, setLdata] = useState(null);
+  const [newlocation, setnewlocation] = useState<{
+    latitude: number;
+    longitude: number;
+  } | null>(null);
+  const Lat = useStore((state: any) => state.Lat);
+  const setLat = useStore((state: any) => state.setLat);
+  const Lng = useStore((state: any) => state.Lng);
+  const setLng = useStore((state: any) => state.setLng);
+  const [ldata, setLdata] = useState([]);
   const onPress = () => setShowSuccessModal(true);
   const road = getSupabase();
   useEffect(() => {
@@ -53,19 +54,21 @@ const Home = () => {
   };
   console.log(ldata);
   if (ldata != null) {
-
-    roadData.push({
-      coordinates: [
-        {
-          latitude: ldata[0].latitude!,
-          longitude: ldata[0].longitude!,
-        },
-        {
-          latitude: ldata[0].latitude + 0.005,
-          longitude: ldata[0].longitude + 0.005,
-        },
-      ],
-      score: ldata[0].score,
+    ldata.map((item) => {
+      console.log(item);
+      roadData.push({
+        coordinates: [
+          {
+            latitude: item.latitude!,
+            longitude: item.longitude!,
+          },
+          {
+            latitude: item.latitude_end,
+            longitude: item.longitude_end,
+          },
+        ],
+        score: item.score,
+      });
     });
   } 
   return (
@@ -75,7 +78,6 @@ const Home = () => {
           //className="w-[100%] h-[100%] border-b-2"
           //showsUserLocation={true}
           roadData={roadData}
-
         />
       </View>
       <GoogleTextInput
