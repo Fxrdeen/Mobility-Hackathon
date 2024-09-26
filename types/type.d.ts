@@ -76,6 +76,14 @@ declare interface GoogleInputProps {
     longitude: number;
     address: string;
   }) => void;
+  onLocationSelect: ({
+    latitude,
+    longitude,
+  }: {
+    latitude: number;
+    longitude: number;
+    address: string;
+  }) => void;
 }
 
 declare interface InputFieldProps extends TextInputProps {
