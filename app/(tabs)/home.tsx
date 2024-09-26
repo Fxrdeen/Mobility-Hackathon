@@ -3,7 +3,7 @@ import GoogleTextInput from "@/components/GoogleTextInput";
 import { icons, images } from "@/constants";
 import { useEffect, useState } from "react";
 import { Image, Text, TouchableOpacity, View } from "react-native";
-import MapView from "react-native-maps";
+import MapView, {Marker} from "react-native-maps";
 import ReactNativeModal from "react-native-modal";
 import { SafeAreaView } from "react-native-safe-area-context";
 import AntDesign from "@expo/vector-icons/AntDesign";
@@ -20,11 +20,13 @@ const roadData = [
   },
   {
     coordinates: [
-      { latitude: 12.9806, longitude: 77.5996 },
-      { latitude: 12.9826, longitude: 77.6016 },
+      { latitude: 12.888111427122361, longitude: 77.54338434280378 },
+      { latitude: 12.888765911321904,  longitude: 77.54361193578372 },
     ],
     score: 80,
   },
+  
+  
 ];
 const Home = () => {
   const [location, setLocation] = useState("");

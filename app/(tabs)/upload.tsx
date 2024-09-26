@@ -14,18 +14,21 @@ import * as ImagePicker from "expo-image-picker";
 import * as Location from "expo-location";
 import { supabase } from "@/supabase";
 import useStore from "@/store";
+import MapView ,{Marker} from "react-native-maps";
 import AntDesign from "@expo/vector-icons/AntDesign";
 import { CheckBox } from "@rneui/themed";
 import { Slider } from "@rneui/themed";
 const Upload = () => {
   const [image, setImage] = useState<string | null>(null);
   const [reviewResult, setReviewResult] = useState<string | null>(null);
-  const latitude = useStore((state) => state.latitude);
-  const longitude = useStore((state) => state.longitude);
+  const slatitude = useStore((state) => state.latitude);
+  const slongitude = useStore((state) => state.longitude);
+  const [isLoading, setIsLoading] = useState<boolean>(false);
   const [name, setName] = useState<string | null>(null);
   const [checked1, setChecked1] = useState<boolean | null>(false);
   const [checked2, setChecked2] = useState<boolean | null>(false);
   const [slider, setSlider] = useState<boolean | null>(false);
+  const [endPoint, setEndPoint] = useState<any>(null);
   const pickImage = async () => {
     let result = await ImagePicker.launchImageLibraryAsync({
       mediaTypes: ImagePicker.MediaTypeOptions.All,
@@ -40,17 +43,26 @@ const Upload = () => {
       const fileName = res.split("/").pop();
       setImage(result.assets[0].uri);
       setName(fileName!);
+      setIsLoading(true);
     }
   };
   const getReview = async () => {
+    setIsLoading(false);
+    console.log("endPoint: ",endPoint);
     if (!image) {
       alert("Please select a video first");
+      setIsLoading(true);
       return;
     }
-
+    if (!endPoint) {
+      alert("Please select an end point first");
+      setIsLoading(true);
+      return;
+    }
     const fileInfo = await FileSystem.getInfoAsync(image);
     if (!fileInfo.exists) {
       alert("File does not exist");
+      setIsLoading(true);
       return;
     }
     const formData = new FormData();
@@ -76,16 +88,22 @@ const Upload = () => {
         alert("Error uploading video: " + errorData.Error);
         return;
       }
-
+      setIsLoading(false);
       const dat = await response.json();
       setReviewResult(dat.Percentage);
 
       const { data, error } = await supabase
         .from("location-footpath")
         .insert([
-          { latitude: latitude, longitude: longitude, score: dat.Percentage },
+          { latitude: slatitude, longitude: slongitude, score: dat.Percentage, latitude_end: endPoint.latitude, longitude_end: endPoint.longitude },
         ])
         .select();
+      if (error) {
+        console.error("Error uploading video:", error);
+        alert("Error uploading video");
+        setIsLoading(true);
+        return;
+      }
     } catch (error) {
       console.error("Error uploading video:", error);
       alert("Error uploading video");
@@ -93,7 +111,11 @@ const Upload = () => {
   };
   const [location, setLocation] = useState(null);
   const [loading, setLoading] = useState(true);
+  const handleMapPress = (event) => {
+    setEndPoint(event.nativeEvent.coordinate);
+  };
   return (
+
     <SafeAreaView className="flex-1 bg-[#121212] p-5">
       <View className="mt-5 w-[95%] h-40 bg-gray-800 rounded-xl flex justify-center items-center self-center">
         {!name ? (
@@ -144,6 +166,25 @@ const Upload = () => {
         <Text className="text-center text-lg">Submit</Text>
       </TouchableOpacity>
       <Text className="text-white mt-10 text-center">{reviewResult}</Text>
+
+      {isLoading==true && (
+        <>
+        <Text className="text-white text-center text-lg font-bold mt-5">Select End Point</Text>
+        <MapView
+          style={{ flex: 1, marginTop: 20 }}
+          initialRegion={{
+            latitude: slatitude,
+            longitude: slongitude,
+            latitudeDelta: 0.0922,
+            longitudeDelta: 0.0421,
+          }}
+          onPress={handleMapPress}
+        >
+          <Marker coordinate={{latitude: slatitude, longitude: slongitude } } image={require('@/assets/icons/spin.png')} title="Starting Point" />
+          {endPoint && <Marker coordinate={endPoint} image={require('@/assets/icons/epin.png')} title="End Point" />}
+        </MapView>
+        </>
+      )}
     </SafeAreaView>
   );
 };
