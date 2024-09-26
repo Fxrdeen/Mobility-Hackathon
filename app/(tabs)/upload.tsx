@@ -62,7 +62,7 @@ const Upload = () => {
     formData.append("electric", checked1 ? "true" : "false");
     formData.append("openDrain", checked2 ? "true" : "false");
     try {
-      const response = await fetch("http://192.168.29.95:3000/upload-image", {
+      const response = await fetch("http://192.168.1.115:5000/upload-image", {
         method: "POST",
         body: formData,
         headers: {
@@ -96,17 +96,24 @@ const Upload = () => {
   return (
     <SafeAreaView className="flex-1 bg-[#121212] p-5">
       <View className="mt-5 w-[95%] h-40 bg-gray-800 rounded-xl flex justify-center items-center self-center">
-        <TouchableOpacity
-          className="flex justify-center items-center gap-5"
-          onPress={pickImage}
-        >
-          <Text className="text-lg font-bold text-white">
-            Pick a video from camera roll
-          </Text>
-          <AntDesign name="upload" size={24} color="white" />
-        </TouchableOpacity>
-        {name && (
-          <Text className="mt-6 text-white text-xs font-bold">{name}</Text>
+        {!name ? (
+          <TouchableOpacity
+            className="flex justify-center items-center gap-5"
+            onPress={pickImage}
+          >
+            <Text className="text-lg font-bold text-white">
+              Pick a video from camera roll
+            </Text>
+            <AntDesign name="upload" size={24} color="white" />
+          </TouchableOpacity>
+        ) : (
+          <>
+            <Image
+              source={{ uri: image }}
+              style={{ width: 100, height: 100, marginTop: 10 }}
+            />
+            <Text className="mt-6 text-white text-xs font-bold">{name}</Text>
+          </>
         )}
       </View>
       <View className="mt-5 rounded-xl">
