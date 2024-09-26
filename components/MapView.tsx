@@ -34,6 +34,7 @@ const MapComponent: React.FC<MapComponentProps> = ({ roadData, onMarkerPress }) 
     }
   };
   const [location, setLocation] = useState(null);
+  
   const [loading, setLoading] = useState(true);
   const setLatitude = useStore((state:any) => state.setLatitude);
   const Lat=useStore((state:any)=>state.Lat);

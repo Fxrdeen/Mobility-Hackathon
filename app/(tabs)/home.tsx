@@ -67,7 +67,7 @@ const Home = () => {
       ],
       score: ldata[0].score,
     });
-  }
+  } 
   return (
     <SafeAreaView className="flex-1 bg-[#121212] p-5">
       <View className="h-[80%] w-full mb-2">
