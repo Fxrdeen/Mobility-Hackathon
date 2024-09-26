@@ -49,7 +49,7 @@ class FootPath(Resource):
             if len(masks) > 0:
                 totalPixels = sum(mask.size for mask in masks)
                 footpathPixels = np.count_nonzero(masks[0]) 
-                footpathPercentage = (((footpathPixels / totalPixels) * 100) - 5*electric - 3*open_drain) if totalPixels else 0
+                footpathPercentage = (((footpathPixels / totalPixels) * 100) - 5*electric - 3*open_drain)+10 if totalPixels else 0
             else:
                 footpathPercentage = 0
 

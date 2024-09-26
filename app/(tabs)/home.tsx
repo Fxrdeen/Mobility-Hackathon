@@ -37,7 +37,7 @@ const Home = () => {
   const setLat = useStore((state: any) => state.setLat);
   const Lng = useStore((state: any) => state.Lng);
   const setLng = useStore((state: any) => state.setLng);
-  const [ldata, setLdata] = useState(null);
+  const [ldata, setLdata] = useState([]);
   const onPress = () => setShowSuccessModal(true);
   const road = getSupabase();
   useEffect(() => {
@@ -54,18 +54,21 @@ const Home = () => {
   };
   console.log(ldata);
   if (ldata != null) {
-    roadData.push({
-      coordinates: [
-        {
-          latitude: ldata[0].latitude!,
-          longitude: ldata[0].longitude!,
-        },
-        {
-          latitude: ldata[0].latitude + 0.005,
-          longitude: ldata[0].longitude + 0.005,
-        },
-      ],
-      score: ldata[0].score,
+    ldata.map((item) => {
+      console.log(item);
+      roadData.push({
+        coordinates: [
+          {
+            latitude: item.latitude!,
+            longitude: item.longitude!,
+          },
+          {
+            latitude: item.latitude_end,
+            longitude: item.longitude_end,
+          },
+        ],
+        score: item.score,
+      });
     });
   }
   return (
