@@ -8,6 +8,7 @@ const GoogleTextInput = ({
   initialLocation,
   containerStyle,
   handlePress,
+  onLocationSelect,
   textInputBackgroundColor,
 }: GoogleInputProps) => {
   return (
@@ -49,7 +50,10 @@ const GoogleTextInput = ({
           language: "en",
         }}
         onPress={(data, details = null) => {
-          console.log(data, details);
+          //console.log(JSON.stringify(details, null, 2));
+          console.log(details?.geometry?.location?.lat);
+          console.log(details?.geometry?.location?.lng);
+          onLocationSelect({latitude: details?.geometry?.location?.lat!, longitude: details?.geometry?.location?.lng!}); // Add this line
         }}
         renderLeftButton={() => (
           <View className="justify-center items-center w-6 h-6">

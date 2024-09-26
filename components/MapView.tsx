@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { ActivityIndicator, Alert, StyleSheet, View } from "react-native";
-import MapView, { Marker, Polyline, PROVIDER_GOOGLE } from "react-native-maps";
+import MapView, { Marker, Polyline, PROVIDER_GOOGLE, Polygon } from "react-native-maps";
 // Define a type for coordinates (latitude, longitude)
 import * as Location from "expo-location";
 import useStore from "@/store";
@@ -18,8 +18,10 @@ type Road = {
 
 interface MapComponentProps {
   roadData: Road[];
+  onMarkerPress: (road: Road) => void;
+
 }
-const MapComponent: React.FC<MapComponentProps> = ({ roadData }) => {
+const MapComponent: React.FC<MapComponentProps> = ({ roadData, onMarkerPress }) => {
   // Function to get road color based on the score
   const getRoadColor = (score: number): string => {
     // Normalize the score between 0 (green) and 100 (red)
@@ -33,10 +35,18 @@ const MapComponent: React.FC<MapComponentProps> = ({ roadData }) => {
   };
   const [location, setLocation] = useState(null);
   const [loading, setLoading] = useState(true);
-  const setLatitude = useStore((state) => state.setLatitude);
-  const latitude = useStore((state) => state.latitude);
-  const longitude = useStore((state) => state.longitude);
-  const setLongitude = useStore((state) => state.setLongitude);
+  const setLatitude = useStore((state:any) => state.setLatitude);
+  const Lat=useStore((state:any)=>state.Lat);
+  const Lng=useStore((state:any)=>state.Lng);
+  const latitude = useStore((state:any) => state.latitude);
+  const longitude = useStore((state:any) => state.longitude);
+  const setLongitude = useStore((state:any) => state.setLongitude);
+  const initialRegion = {
+    latitude: Lat!,
+    longitude: Lng!,
+    latitudeDelta: 0.0922,
+    longitudeDelta: 0.0421,
+  };
 
   useEffect(() => {
     (async () => {
@@ -62,6 +72,12 @@ const MapComponent: React.FC<MapComponentProps> = ({ roadData }) => {
     })();
   }, []);
 
+  const handlePolygonPress = (road: Road) => {
+    console.log("road", road);
+    onMarkerPress(road);
+  };
+
+
   if (loading) {
     return (
       <View style={styles.loaderContainer}>
@@ -79,14 +95,22 @@ const MapComponent: React.FC<MapComponentProps> = ({ roadData }) => {
         latitudeDelta: 0.0922,
         longitudeDelta: 0.0421,
       }}
+      region={{
+        latitude: Lat!,
+        longitude: Lng!,
+        latitudeDelta: 0.0922,
+        longitudeDelta: 0.0421,
+      }}
       showsUserLocation={true}
     >
       {roadData.map((road: Road, index: number) => (
         <Polyline
           key={index}
+          tappable={true}
           coordinates={road.coordinates}
           strokeColor={getRoadColor(road.score)}
           strokeWidth={6}
+          onPress={() => handlePolygonPress(road)}
         />
       ))}
     </MapView>

@@ -9,7 +9,7 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import AntDesign from "@expo/vector-icons/AntDesign";
 import MapComponent from "@/components/MapView";
 import { getSupabase } from "@/server";
-
+import useStore from "@/store";
 const roadData = [
   {
     coordinates: [
@@ -31,6 +31,11 @@ const roadData = [
 const Home = () => {
   const [location, setLocation] = useState("");
   const [showSuccessModal, setShowSuccessModal] = useState(false);
+  const [newlocation, setnewlocation] = useState<{latitude: number, longitude: number} | null>(null);
+  const Lat = useStore((state:any) => state.Lat);
+  const setLat = useStore((state:any) => state.setLat);
+  const Lng = useStore((state:any) => state.Lng);
+  const setLng = useStore((state:any) => state.setLng);
   const [ldata, setLdata] = useState(null);
   const onPress = () => setShowSuccessModal(true);
   const road = getSupabase();
@@ -41,8 +46,14 @@ const Home = () => {
     };
     func();
   }, []);
+  const handleLocationSelect = (latitude: number, longitude: number) => {
+    setnewlocation({ latitude, longitude });
+    setLat(latitude);
+    setLng(longitude);
+  };
   console.log(ldata);
   if (ldata != null) {
+
     roadData.push({
       coordinates: [
         {
@@ -64,6 +75,7 @@ const Home = () => {
           //className="w-[100%] h-[100%] border-b-2"
           //showsUserLocation={true}
           roadData={roadData}
+
         />
       </View>
       <GoogleTextInput
@@ -71,11 +83,13 @@ const Home = () => {
         textInputBackgroundColor="transparent"
         icon={icons.map}
         handlePress={() => {}}
+        onLocationSelect={handleLocationSelect}
       />
       <Text className="text-2xl">{location}</Text>
       <View className="flex items-center justify-center">
         <TouchableOpacity
           onPress={onPress}
+          onLocationSelect={handleLocationSelect}
           className="flex justify-center items-center bg-gray-400 rounded-xl w-44 h-20"
         >
           <Text className="text-white text-center text-2xl">Check Status</Text>
