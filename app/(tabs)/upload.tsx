@@ -62,7 +62,7 @@ const Upload = () => {
     formData.append("electric", checked1 ? "true" : "false");
     formData.append("openDrain", checked2 ? "true" : "false");
     try {
-      const response = await fetch("http://192.168.1.115:5000/upload-image", {
+      const response = await fetch("http://192.168.29.95:3000/upload-image", {
         method: "POST",
         body: formData,
         headers: {
