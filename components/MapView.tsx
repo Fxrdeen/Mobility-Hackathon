@@ -24,10 +24,13 @@ type Road = {
 interface MapComponentProps {
   roadData: Road[];
   onMarkerPress: (road: Road) => void;
+  selectedLocation: Coordinate | null; // Add this prop
 }
+
 const MapComponent: React.FC<MapComponentProps> = ({
   roadData,
   onMarkerPress,
+  selectedLocation, // Add this prop
 }) => {
   // Function to get road color based on the score
   const getRoadColor = (score: number): string => {
@@ -41,7 +44,8 @@ const MapComponent: React.FC<MapComponentProps> = ({
     }
   };
   const [location, setLocation] = useState(null);
-  
+  const [region, setRegion] = useState(null); 
+  const [selectedRoad, setSelectedRoad] = useState(null);
   const [loading, setLoading] = useState(true);
   const setLatitude = useStore((state: any) => state.setLatitude);
   const Lat = useStore((state: any) => state.Lat);
@@ -80,8 +84,19 @@ const MapComponent: React.FC<MapComponentProps> = ({
     })();
   }, []);
 
+  useEffect(() => {
+    if (selectedLocation) {
+      setRegion({
+        latitude: selectedLocation.latitude,
+        longitude: selectedLocation.longitude,
+        latitudeDelta: 0.0922,
+        longitudeDelta: 0.0421,
+      });
+    }
+  }, [selectedLocation]); // Update region when selectedLocation changes
+
   const handlePolygonPress = (road: Road) => {
-    console.log("road", road);
+    setSelectedRoad(road);
     onMarkerPress(road);
   };
 
@@ -102,17 +117,30 @@ const MapComponent: React.FC<MapComponentProps> = ({
         latitudeDelta: 0.0922,
         longitudeDelta: 0.0421,
       }}
+      region={region!}
       showsUserLocation={true}
     >
       {roadData.map((road: Road, index: number) => (
+        <>
+          {selectedRoad && selectedRoad.id === road.id && (
+            <Polyline
+              coordinates={road.coordinates}
+              strokeColor="rgba(0, 0, 255, 0.7)" // Blue color for the outline
+              strokeWidth={6} // Slightly wider than the main Polyline
+          zIndex={1}
+          />
+        )}  
         <Polyline
           key={index}
           tappable={true}
           coordinates={road.coordinates}
           strokeColor={getRoadColor(road.score)}
           strokeWidth={6}
-          onPress={() => handlePolygonPress(road)}
+          onPress={() => {
+            handlePolygonPress(road)
+          }}
         />
+        </>
       ))}
     </MapView>
   );
