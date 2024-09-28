@@ -67,8 +67,10 @@ const Upload = () => {
     } as any);
     formData.append("electric", checked1 ? "true" : "false");
     formData.append("openDrain", checked2 ? "true" : "false");
-    try {
-      const response = await fetch("http://192.168.29.237:3000/upload-image", {
+    try { 
+      const response = await fetch("https://pf-api-d8pu.onrender.com/upload-image", {     //100.20.92.101  44.225.181.72  44.227.217.144   https://mobility-hackathon-gbd4.onrender.com
+        
+         
         method: "POST",
         body: formData,
         headers: {
