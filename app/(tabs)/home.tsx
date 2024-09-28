@@ -1,16 +1,14 @@
 import CustomButton from "@/components/CustomButton";
 import GoogleTextInput from "@/components/GoogleTextInput";
-import { icons, images } from "@/constants";
+import { icons } from "@/constants";
 import { useEffect, useState } from "react";
-import { Image, Text, TouchableOpacity, View } from "react-native";
-import MapView, { Marker } from "react-native-maps";
+import { Text, TouchableOpacity, View } from "react-native";
 import ReactNativeModal from "react-native-modal";
 import { SafeAreaView } from "react-native-safe-area-context";
 import AntDesign from "@expo/vector-icons/AntDesign";
 import MapComponent from "@/components/MapView";
 import { getSupabase } from "@/server";
 import useStore from "@/store";
-import Geolocation from "@react-native-community/geolocation";
 import { useIsFocused } from "@react-navigation/native";
 const roadData = [
   {
