@@ -1,5 +1,6 @@
-import { useState } from "react";
-import { StyleSheet, Image, Text, View, TouchableOpacity } from "react-native";
+import { useState,useCallback } from "react";
+import { StyleSheet, Image, Text, View, TouchableOpacity,RefreshControl } from "react-native";
+import { router, useNavigation } from 'expo-router';
 import { SafeAreaView } from "react-native-safe-area-context";
 import * as FileSystem from "expo-file-system";
 import * as ImagePicker from "expo-image-picker";
@@ -7,8 +8,8 @@ import { supabase } from "@/supabase";
 import useStore from "@/store";
 import MapView, { Marker } from "react-native-maps";
 import AntDesign from "@expo/vector-icons/AntDesign";
+import { ActivityIndicator } from "react-native";
 import { CheckBox } from "@rneui/themed";
-import { router, useNavigation } from "expo-router";
 import DocumentScanner from "react-native-document-scanner-plugin";
 const Upload = () => {
   const [scannedImage, setScannedImage] = useState();
@@ -16,13 +17,22 @@ const Upload = () => {
   const [reviewResult, setReviewResult] = useState<string | null>(null);
   const slatitude = useStore((state) => state.latitude);
   const slongitude = useStore((state) => state.longitude);
+  const [refreshing, setRefreshing] = useState(false);
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [name, setName] = useState<string | null>(null);
   const [checked1, setChecked1] = useState<boolean | null>(false);
   const [checked2, setChecked2] = useState<boolean | null>(false);
   const [slider, setSlider] = useState<boolean | null>(false);
   const [endPoint, setEndPoint] = useState<any>(null);
+  const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
+
   const nav = useNavigation();
+  const onRefresh = useCallback(() => {
+    setTimeout(() => {
+      setRefreshing(false);
+    }, 2000);
+  }, []);
+
   const pickImage = async () => {
     let result = await ImagePicker.launchImageLibraryAsync({
       mediaTypes: ImagePicker.MediaTypeOptions.All,
@@ -46,6 +56,7 @@ const Upload = () => {
     if (!image) {
       alert("Please select a image first");
       setIsLoading(true);
+
       return;
     }
     if (!endPoint) {
@@ -53,6 +64,7 @@ const Upload = () => {
       setIsLoading(true);
       return;
     }
+    setIsSubmitting(true);
     const fileInfo = await FileSystem.getInfoAsync(image);
     if (!fileInfo.exists) {
       alert("File does not exist");
@@ -67,16 +79,19 @@ const Upload = () => {
     } as any);
     formData.append("electric", checked1 ? "true" : "false");
     formData.append("openDrain", checked2 ? "true" : "false");
-    try { 
-      const response = await fetch("https://pf-api-d8pu.onrender.com/upload-image", {     //100.20.92.101  44.225.181.72  44.227.217.144   https://mobility-hackathon-gbd4.onrender.com
-        
-         
-        method: "POST",
-        body: formData,
-        headers: {
-          "Content-Type": "multipart/form-data",
-        },
-      });
+    try {
+      const response = await fetch(
+        "https://pf-api-d8pu.onrender.com/upload-image",
+        {
+          //100.20.92.101  44.225.181.72  44.227.217.144   https://mobility-hackathon-gbd4.onrender.com
+
+          method: "POST",
+          body: formData,
+          headers: {
+            "Content-Type": "multipart/form-data",
+          },
+        }
+      );
 
       if (!response.ok) {
         const errorData = await response.json();
@@ -100,12 +115,16 @@ const Upload = () => {
           },
         ])
         .select();
+      console.log("Score: ", dat.Percentage);
+      console.log("data: ", data);
       if (error) {
         console.error("Error uploading image:", error);
         alert("Error uploading image");
         setIsLoading(true);
         return;
       }
+      setIsSubmitting(false);
+      setRefreshing(true);
       router.navigate("/(tabs)/home");
     } catch (error) {
       console.error("Error uploading image:", error);
@@ -200,6 +219,7 @@ const Upload = () => {
       <TouchableOpacity
         className="mt-5 h-10 flex justify-center items-center bg-gray-300 w-[95%] self-center text-center rounded-xl"
         onPress={getReview}
+        disabled={isSubmitting}
       >
         <Text className="text-center text-lg">Submit</Text>
       </TouchableOpacity>
@@ -209,7 +229,13 @@ const Upload = () => {
       >
         <Text className="text-center text-lg">Document</Text>
       </TouchableOpacity>
+      {isSubmitting ? (
+        <ActivityIndicator size="large" color="#0000ff" />
+      ) : (
+        <Text className="text-center text-lg">Submitted! Score </Text>
+      )}
     </SafeAreaView>
+    
   );
 };
 
