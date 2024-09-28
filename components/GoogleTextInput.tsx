@@ -53,6 +53,10 @@ const GoogleTextInput = ({
           //console.log(JSON.stringify(details, null, 2));
           console.log(details?.geometry?.location?.lat);
           console.log(details?.geometry?.location?.lng);
+          onLocationSelect({
+            latitude: details?.geometry?.location?.lat!,
+            longitude: details?.geometry?.location?.lng!,
+          });
         }}
         renderLeftButton={() => (
           <View className="justify-center items-center w-6 h-6">

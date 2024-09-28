@@ -107,8 +107,8 @@ const Upload = () => {
         ])
         .select();
       if (error) {
-        console.error("Error uploading video:", error);
-        alert("Error uploading video");
+        console.error("Error uploading image:", error);
+        alert("Error uploading image");
         setIsLoading(true);
         return;
       }
@@ -131,7 +131,7 @@ const Upload = () => {
             onPress={pickImage}
           >
             <Text className="text-lg font-bold text-white">
-              Pick a video from camera roll
+              Pick a image from camera roll
             </Text>
             <AntDesign name="upload" size={24} color="white" />
           </TouchableOpacity>
