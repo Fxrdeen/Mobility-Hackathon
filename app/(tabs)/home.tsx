@@ -1,17 +1,15 @@
 import CustomButton from "@/components/CustomButton";
 import GoogleTextInput from "@/components/GoogleTextInput";
-import { icons, images } from "@/constants";
+import { icons } from "@/constants";
 import { useEffect, useState } from "react";
-import { Image, Text, TouchableOpacity, View } from "react-native";
-import MapView, { Marker } from "react-native-maps";
+import { Text, TouchableOpacity, View } from "react-native";
 import ReactNativeModal from "react-native-modal";
 import { SafeAreaView } from "react-native-safe-area-context";
 import AntDesign from "@expo/vector-icons/AntDesign";
 import MapComponent from "@/components/MapView";
 import { getSupabase } from "@/server";
 import useStore from "@/store";
-import Geolocation from "@react-native-community/geolocation";
-
+import { useIsFocused } from "@react-navigation/native";
 const roadData = [
   {
     coordinates: [
@@ -45,45 +43,53 @@ const Home = () => {
   const [selectedLocation, setSelectedLocation] = useState<Coordinate | null>(
     null
   );
+  const isFocused = useIsFocused();
   const onPress = () => setShowSuccessModal(true);
   const road = getSupabase();
   useEffect(() => {
-    const func = async () => {
-      const road = await getSupabase();
-      setLdata(road);
-    };
-    func();
-    const func2 = async () => {
-        const address = await getAddressFromCoordinates(modalData.coordinates[0].latitude, modalData.coordinates[0].longitude);
-        setModalAddress( address || "");
-        console.log(address);
-      
+    if (isFocused) {
+      const func = async () => {
+        const road = await getSupabase();
+        setLdata(road);
+      };
+      func();
     }
-    if(modalData!=null){
+
+    const func2 = async () => {
+      const address = await getAddressFromCoordinates(
+        modalData.coordinates[0].latitude,
+        modalData.coordinates[0].longitude
+      );
+      setModalAddress(address || "");
+      console.log(address);
+    };
+    if (modalData != null) {
       func2();
     }
-  }, [modalData]);
+  }, [modalData, isFocused]);
 
-  const getAddressFromCoordinates = async (latitude: number, longitude: number) => {
+  const getAddressFromCoordinates = async (
+    latitude: number,
+    longitude: number
+  ) => {
     try {
       const response = await fetch(
         `https://maps.googleapis.com/maps/api/geocode/json?latlng=${latitude},${longitude}&key=${process.env.EXPO_PUBLIC_GOOGLE_API_KEY}`
       );
       const data = await response.json();
 
-      if (data.status === 'OK') {
+      if (data.status === "OK") {
         const address = data.results[0].formatted_address;
         return address;
       } else {
-        console.log('Geocoding failed:', data.status);
+        console.log("Geocoding failed:", data.status);
         return null;
       }
     } catch (error) {
-      console.log('Error:', error);
+      console.log("Error:", error);
       return null;
     }
   };
-
 
   const handleLocationSelect = (coords: {
     latitude: number;
@@ -155,12 +161,18 @@ const Home = () => {
             </Text>
             <Text className="text-base text-gray-400 font-JakartaBold text-center">
               [{modalData.coordinates[0].latitude},
-              {modalData.coordinates[0].longitude}] -
-              [{modalData.coordinates[1].latitude},
+              {modalData.coordinates[0].longitude}] - [
+              {modalData.coordinates[1].latitude},
               {modalData.coordinates[1].longitude}]
             </Text>
-            <Text className={`mt-2 mb-3 text-xl text-red-400 font-JakartaBold text-center ${modalData.score < 50 ? "text-red-400" : "text-green-400"}`}>
-              {modalData.score < 50 ? "Not Recommended to walk!" : "Safe to walk!"}
+            <Text
+              className={`mt-2 mb-3 text-xl text-red-400 font-JakartaBold text-center ${
+                modalData.score < 50 ? "text-red-400" : "text-green-400"
+              }`}
+            >
+              {modalData.score < 50
+                ? "Not Recommended to walk!"
+                : "Safe to walk!"}
             </Text>
             <CustomButton
               title="Close"

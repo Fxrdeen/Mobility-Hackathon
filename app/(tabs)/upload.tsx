@@ -1,25 +1,17 @@
-import { useEffect, useState } from "react";
-import {
-  StyleSheet,
-  Button,
-  Image,
-  Text,
-  Alert,
-  View,
-  TouchableOpacity,
-} from "react-native";
+import { useState } from "react";
+import { StyleSheet, Image, Text, View, TouchableOpacity } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import * as FileSystem from "expo-file-system";
 import * as ImagePicker from "expo-image-picker";
-import * as Location from "expo-location";
 import { supabase } from "@/supabase";
 import useStore from "@/store";
 import MapView, { Marker } from "react-native-maps";
 import AntDesign from "@expo/vector-icons/AntDesign";
 import { CheckBox } from "@rneui/themed";
-import { Slider } from "@rneui/themed";
 import { router, useNavigation } from "expo-router";
+import DocumentScanner from "react-native-document-scanner-plugin";
 const Upload = () => {
+  const [scannedImage, setScannedImage] = useState();
   const [image, setImage] = useState<string | null>(null);
   const [reviewResult, setReviewResult] = useState<string | null>(null);
   const slatitude = useStore((state) => state.latitude);
@@ -76,7 +68,7 @@ const Upload = () => {
     formData.append("electric", checked1 ? "true" : "false");
     formData.append("openDrain", checked2 ? "true" : "false");
     try {
-      const response = await fetch("http://192.168.29.95:3000/upload-image", {
+      const response = await fetch("http://192.168.29.237:3000/upload-image", {
         method: "POST",
         body: formData,
         headers: {
@@ -112,6 +104,7 @@ const Upload = () => {
         setIsLoading(true);
         return;
       }
+      router.navigate("/(tabs)/home");
     } catch (error) {
       console.error("Error uploading image:", error);
       alert("Error uploading image");
@@ -121,6 +114,12 @@ const Upload = () => {
   const [loading, setLoading] = useState(true);
   const handleMapPress = (event) => {
     setEndPoint(event.nativeEvent.coordinate);
+  };
+  const scanDocument = async () => {
+    const { scannedImages } = await DocumentScanner.scanDocument();
+    if (scannedImages!.length > 0) {
+      setScannedImage(scannedImages[0]);
+    }
   };
   return (
     <SafeAreaView className="flex-1 bg-[#121212] p-5">
@@ -201,6 +200,12 @@ const Upload = () => {
         onPress={getReview}
       >
         <Text className="text-center text-lg">Submit</Text>
+      </TouchableOpacity>
+      <TouchableOpacity
+        className="mt-5 h-10 flex justify-center items-center bg-gray-300 w-[95%] self-center text-center rounded-xl"
+        onPress={scanDocument}
+      >
+        <Text className="text-center text-lg">Document</Text>
       </TouchableOpacity>
     </SafeAreaView>
   );

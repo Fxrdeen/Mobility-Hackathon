@@ -26,5 +26,7 @@ pyvenv.cfg
 /backend/lib
 /backend/share
 /backend/uploads/image.*
+android
+ios
 bun.lockb
 %ProgramData%
