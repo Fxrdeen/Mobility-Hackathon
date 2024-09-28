@@ -76,7 +76,7 @@ const Upload = () => {
     formData.append("electric", checked1 ? "true" : "false");
     formData.append("openDrain", checked2 ? "true" : "false");
     try {
-      const response = await fetch("http://192.168.29.95:3000/upload-image", {
+      const response = await fetch("http://192.168.29.237:3000/upload-image", {
         method: "POST",
         body: formData,
         headers: {
@@ -112,6 +112,7 @@ const Upload = () => {
         setIsLoading(true);
         return;
       }
+      router.navigate("/(tabs)/home");
     } catch (error) {
       console.error("Error uploading image:", error);
       alert("Error uploading image");
