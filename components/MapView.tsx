@@ -1,11 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { ActivityIndicator, Alert, StyleSheet, View } from "react-native";
-import MapView, {
-  Marker,
-  Polyline,
-  PROVIDER_GOOGLE,
-  Polygon,
-} from "react-native-maps";
+import MapView, { Polyline, PROVIDER_DEFAULT } from "react-native-maps";
 // Define a type for coordinates (latitude, longitude)
 import * as Location from "expo-location";
 import useStore from "@/store";
@@ -44,7 +39,7 @@ const MapComponent: React.FC<MapComponentProps> = ({
     }
   };
   const [location, setLocation] = useState(null);
-  const [region, setRegion] = useState(null); 
+  const [region, setRegion] = useState(null);
   const [selectedRoad, setSelectedRoad] = useState(null);
   const [loading, setLoading] = useState(true);
   const setLatitude = useStore((state: any) => state.setLatitude);
@@ -109,7 +104,7 @@ const MapComponent: React.FC<MapComponentProps> = ({
   }
   return (
     <MapView
-      provider={PROVIDER_GOOGLE}
+      provider={PROVIDER_DEFAULT}
       style={{ flex: 1 }}
       initialRegion={{
         latitude: location.latitude!,
@@ -127,19 +122,19 @@ const MapComponent: React.FC<MapComponentProps> = ({
               coordinates={road.coordinates}
               strokeColor="rgba(0, 0, 255, 0.7)" // Blue color for the outline
               strokeWidth={6} // Slightly wider than the main Polyline
-          zIndex={1}
+              zIndex={1}
+            />
+          )}
+          <Polyline
+            key={index}
+            tappable={true}
+            coordinates={road.coordinates}
+            strokeColor={getRoadColor(road.score)}
+            strokeWidth={6}
+            onPress={() => {
+              handlePolygonPress(road);
+            }}
           />
-        )}  
-        <Polyline
-          key={index}
-          tappable={true}
-          coordinates={road.coordinates}
-          strokeColor={getRoadColor(road.score)}
-          strokeWidth={6}
-          onPress={() => {
-            handlePolygonPress(road)
-          }}
-        />
         </>
       ))}
     </MapView>
