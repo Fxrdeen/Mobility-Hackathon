@@ -19,6 +19,7 @@ web-build/
 expo-env.d.ts
 # @end expo-cli
 venv
+backend/__pycache__
 pyvenv.cfg
 /backend/bin
 /backend/include
