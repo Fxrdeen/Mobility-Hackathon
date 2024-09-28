@@ -52,7 +52,7 @@ const Upload = () => {
     setIsLoading(false);
     console.log("endPoint: ", endPoint);
     if (!image) {
-      alert("Please select a video first");
+      alert("Please select a image first");
       setIsLoading(true);
       return;
     }
@@ -87,7 +87,7 @@ const Upload = () => {
       if (!response.ok) {
         const errorData = await response.json();
         console.error("Server error:", errorData);
-        alert("Error uploading video: " + errorData.Error);
+        alert("Error uploading image: " + errorData.Error);
         return;
       }
       setIsLoading(false);
@@ -113,8 +113,8 @@ const Upload = () => {
         return;
       }
     } catch (error) {
-      console.error("Error uploading video:", error);
-      alert("Error uploading video");
+      console.error("Error uploading image:", error);
+      alert("Error uploading image");
     }
   };
   const [location, setLocation] = useState(null);
