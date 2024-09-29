@@ -2,7 +2,7 @@ import { icons } from "@/constants";
 import { GoogleInputProps } from "@/types/type";
 import { View, Text, Image } from "react-native";
 import { GooglePlacesAutocomplete } from "react-native-google-places-autocomplete";
-const googlePlacesApiKey = "AIzaSyC8ZPSlmQmGQ3yowTg0bz5agaW302vC0wg";
+const googlePlacesApiKey = process.env.EXPO_PUBLIC_GOOGLE_API_KEY;
 const GoogleTextInput = ({
   icon,
   initialLocation,
