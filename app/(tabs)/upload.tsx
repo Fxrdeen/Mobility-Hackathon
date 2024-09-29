@@ -12,7 +12,7 @@ import { ActivityIndicator } from "react-native";
 import { CheckBox } from "@rneui/themed";
 import DocumentScanner from "react-native-document-scanner-plugin";
 const Upload = () => {
-  const [scannedImage, setScannedImage] = useState();
+  const [scannedImage, setScannedImage] = useState<string | null>(null);
   const [image, setImage] = useState<string | null>(null);
   const [reviewResult, setReviewResult] = useState<string | null>(null);
   const slatitude = useStore((state) => state.latitude);
@@ -27,12 +27,6 @@ const Upload = () => {
   const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
 
   const nav = useNavigation();
-  const onRefresh = useCallback(() => {
-    setTimeout(() => {
-      setRefreshing(false);
-    }, 2000);
-  }, []);
-
   const pickImage = async () => {
     let result = await ImagePicker.launchImageLibraryAsync({
       mediaTypes: ImagePicker.MediaTypeOptions.All,
@@ -53,33 +47,54 @@ const Upload = () => {
   const getReview = async () => {
     setIsLoading(false);
     console.log("endPoint: ", endPoint);
-    if (!image) {
+    if (!image && !scannedImage) {
       alert("Please select a image first");
       setIsLoading(true);
 
+      return;
+    }
+    if(image && scannedImage){
+      alert("Please select one image");
+      setIsLoading(true);
       return;
     }
     if (!endPoint) {
       alert("Please select an end point first");
       setIsLoading(true);
       return;
+    }if(image){
+      fileUri = image
     }
     setIsSubmitting(true);
     const fileInfo = await FileSystem.getInfoAsync(image);
+
+    else{
+      fileUri = scannedImage
+    }
+    const fileInfo = await FileSystem.getInfoAsync(fileUri);
     if (!fileInfo.exists) {
       alert("File does not exist");
       setIsLoading(true);
       return;
     }
     const formData = new FormData();
+    if(image){
     formData.append("image", {
       uri: image,
       type: "image/jpeg",
       name: "image.jpg",
     } as any);
+  }else if(scannedImage){
+    formData.append("image", {
+      uri: scannedImage,
+      type: "image/jpeg",
+      name: "image.jpg",
+    } as any);
+  }
     formData.append("electric", checked1 ? "true" : "false");
     formData.append("openDrain", checked2 ? "true" : "false");
     try {
+
       const response = await fetch(
         "https://pf-api-d8pu.onrender.com/upload-image",
         {
@@ -92,6 +107,13 @@ const Upload = () => {
           },
         }
       );
+      const response = await fetch("http://192.168.1.4:3000/upload-image", {
+        method: "POST",
+        body: formData,
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
+      });
 
       if (!response.ok) {
         const errorData = await response.json();
@@ -140,6 +162,9 @@ const Upload = () => {
     const { scannedImages } = await DocumentScanner.scanDocument();
     if (scannedImages!.length > 0) {
       setScannedImage(scannedImages[0]);
+      const fName = scannedImages[0].split("/").pop();
+      setName(fName);
+      setIsLoading(true);
     }
   };
   return (
@@ -158,13 +183,19 @@ const Upload = () => {
         ) : (
           <>
             <Image
-              source={{ uri: image }}
+              source={{ uri: image||scannedImage }}
               style={{ width: 100, height: 100, marginTop: 10 }}
             />
             <Text className="mt-6 text-white text-xs font-bold">{name}</Text>
           </>
         )}
       </View>
+      <TouchableOpacity
+        className="mt-5 h-10 flex justify-center items-center bg-gray-300 w-[95%] self-center text-center rounded-xl"
+        onPress={scanDocument}
+      >
+        <Text className="text-center text-lg">Click a Picture!</Text>
+      </TouchableOpacity>
       <View className="mt-5 rounded-xl">
         <CheckBox
           center
@@ -223,6 +254,7 @@ const Upload = () => {
       >
         <Text className="text-center text-lg">Submit</Text>
       </TouchableOpacity>
+
       <TouchableOpacity
         className="mt-5 h-10 flex justify-center items-center bg-gray-300 w-[95%] self-center text-center rounded-xl"
         onPress={scanDocument}
