@@ -248,13 +248,13 @@ const Upload = () => {
       >
         <Text className="text-center text-lg">Submit</Text>
       </TouchableOpacity>
-
+      {/* <TouchableOpacity
       <TouchableOpacity
         className="mt-5 h-10 flex justify-center items-center bg-gray-300 w-[95%] self-center text-center rounded-xl"
         onPress={scanDocument}
       >
         <Text className="text-center text-lg">Document</Text>
-      </TouchableOpacity>
+      </TouchableOpacity> */}
       {isSubmitting ? (
         <ActivityIndicator size="large" color="#0000ff" />
       ) : (
