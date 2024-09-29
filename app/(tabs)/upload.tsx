@@ -65,12 +65,12 @@ const Upload = () => {
     }if(image){
       fileUri = image
     }
-    setIsSubmitting(true);
-    const fileInfo = await FileSystem.getInfoAsync(image);
+
 
     else{
       fileUri = scannedImage
     }
+    setIsSubmitting(true);
     const fileInfo = await FileSystem.getInfoAsync(fileUri);
     if (!fileInfo.exists) {
       alert("File does not exist");
@@ -107,13 +107,7 @@ const Upload = () => {
           },
         }
       );
-      const response = await fetch("http://192.168.1.4:3000/upload-image", {
-        method: "POST",
-        body: formData,
-        headers: {
-          "Content-Type": "multipart/form-data",
-        },
-      });
+
 
       if (!response.ok) {
         const errorData = await response.json();
