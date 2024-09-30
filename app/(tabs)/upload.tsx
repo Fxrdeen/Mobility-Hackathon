@@ -18,6 +18,7 @@ import AntDesign from "@expo/vector-icons/AntDesign";
 import { ActivityIndicator } from "react-native";
 import { CheckBox } from "@rneui/themed";
 import DocumentScanner from "react-native-document-scanner-plugin";
+import { Rating, AirbnbRating } from 'react-native-ratings';
 const Upload = () => {
   const [scannedImage, setScannedImage] = useState<string | null>(null);
   const [image, setImage] = useState<string | null>(null);
@@ -32,7 +33,7 @@ const Upload = () => {
   const [slider, setSlider] = useState<boolean | null>(false);
   const [endPoint, setEndPoint] = useState<any>(null);
   const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
-
+  const [rating,setRating] = useState();
   const nav = useNavigation();
   const pickImage = async () => {
     let result = await ImagePicker.launchImageLibraryAsync({
@@ -131,6 +132,7 @@ const Upload = () => {
             score: dat.Percentage,
             latitude_end: endPoint.latitude,
             longitude_end: endPoint.longitude,
+            user_rating: rating
           },
         ])
         .select();
@@ -164,6 +166,10 @@ const Upload = () => {
       setIsLoading(true);
     }
   };
+  const ratingCompleted = (rating)=>{
+    //console.log("Rating: "+rating);
+    setRating(rating);
+  }
   return (
     <SafeAreaView className="flex-1 bg-[#121212] p-5">
       <View className="mt-5 w-[95%] h-40 bg-gray-800 rounded-xl flex justify-center items-center self-center">
@@ -211,6 +217,17 @@ const Upload = () => {
             borderRadius: 10,
           }}
           onPress={() => setChecked2(!checked2)}
+        />
+
+        <Rating
+        type='star'
+        ratingCount={5}
+        imageSize={30}
+        ratingBackgroundColor='black'
+        tintColor="black"
+        startingValue={0}
+        onFinishRating={ratingCompleted}
+        style={{ paddingVertical: 10 }}
         />
         {/* <Slider minimumValue={0} maximumValue={5} value={slider} /> */}
       </View>
