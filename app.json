@@ -21,9 +21,17 @@
         "foregroundImage": "./assets/images/adaptive-icon.png",
         "backgroundColor": "#ffffff"
       },
-      "permissions": ["android.permission.RECORD_AUDIO"],
-      "package": "com.anonymous.MobilityHackathon"
+      "permissions": [
+        "android.permission.RECORD_AUDIO"
+      ],
+      "package": "com.anonymous.MobilityHackathon",
+      "config": {
+        "googleMaps": {
+          "apiKey": "AIzaSyC8ZPSlmQmGQ3yowTg0bz5agaW302vC0wg"
+        }
+      }
     },
+
     "web": {
       "bundler": "metro",
       "output": "static",
@@ -46,6 +54,19 @@
     ],
     "experiments": {
       "typedRoutes": true
+    },
+    "extra": {
+      "eas": {
+        "projectId": "bbbae136-c8af-4f68-8916-13fe61f51e10"
+      },
+      "GOOGLE_MAPS_API_KEY": "AIzaSyC8ZPSlmQmGQ3yowTg0bz5agaW302vC0wg"
+
+    },
+    "runtimeVersion": {
+      "policy": "appVersion"
+    },
+    "updates": {
+      "url": "https://u.expo.dev/bbbae136-c8af-4f68-8916-13fe61f51e10"
     }
   }
 }

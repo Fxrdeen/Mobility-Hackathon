@@ -251,6 +251,11 @@ const Upload = () => {
       >
         <Text className="text-center text-lg">Submit</Text>
       </TouchableOpacity>
+      {isSubmitting ? (
+        <ActivityIndicator size="large" color="#0000ff" />
+      ) : (
+        <Text className="text-center text-lg">Submitted! Score </Text>
+      )}
     </SafeAreaView>
   );
 };

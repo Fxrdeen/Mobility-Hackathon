@@ -1,8 +1,10 @@
 import { icons } from "@/constants";
 import { GoogleInputProps } from "@/types/type";
-import { View, Text, Image } from "react-native";
+import Constants from 'expo-constants';
+import { useState } from "react";
+import { View, Text, Image  } from "react-native";
 import { GooglePlacesAutocomplete } from "react-native-google-places-autocomplete";
-const googlePlacesApiKey = process.env.EXPO_PUBLIC_GOOGLE_API_KEY;
+const googlePlacesApiKey = Constants.expoConfig?.extra?.GOOGLE_MAPS_API_KEY!;
 const GoogleTextInput = ({
   icon,
   initialLocation,
@@ -11,6 +13,12 @@ const GoogleTextInput = ({
   onLocationSelect,
   textInputBackgroundColor,
 }: GoogleInputProps) => {
+
+  const [selectedLocation, setSelectedLocation] = useState<{
+    latitude: number;
+    longitude: number;
+  } | null>(null);
+
   return (
     <View
       className={`flex flex-row items-center justify-center relative z-50 rounded-xl ${containerStyle} mb-1`}
@@ -53,6 +61,10 @@ const GoogleTextInput = ({
           //console.log(JSON.stringify(details, null, 2));
           console.log(details?.geometry?.location?.lat);
           console.log(details?.geometry?.location?.lng);
+          setSelectedLocation({
+            latitude: details?.geometry?.location?.lat!,
+            longitude: details?.geometry?.location?.lng!,
+          });
           onLocationSelect({
             latitude: details?.geometry?.location?.lat!,
             longitude: details?.geometry?.location?.lng!,

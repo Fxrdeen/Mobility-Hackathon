@@ -6,6 +6,7 @@ import { Text, TouchableOpacity, View } from "react-native";
 import ReactNativeModal from "react-native-modal";
 import { SafeAreaView } from "react-native-safe-area-context";
 import AntDesign from "@expo/vector-icons/AntDesign";
+import Constants from 'expo-constants';
 import MapComponent from "@/components/MapView";
 import { getSupabase } from "@/server";
 import useStore from "@/store";
