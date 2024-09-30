@@ -1,6 +1,13 @@
-import { useState,useCallback } from "react";
-import { StyleSheet, Image, Text, View, TouchableOpacity,RefreshControl } from "react-native";
-import { router, useNavigation } from 'expo-router';
+import { useState, useCallback } from "react";
+import {
+  StyleSheet,
+  Image,
+  Text,
+  View,
+  TouchableOpacity,
+  RefreshControl,
+} from "react-native";
+import { router, useNavigation } from "expo-router";
 import { SafeAreaView } from "react-native-safe-area-context";
 import * as FileSystem from "expo-file-system";
 import * as ImagePicker from "expo-image-picker";
@@ -53,7 +60,7 @@ const Upload = () => {
 
       return;
     }
-    if(image && scannedImage){
+    if (image && scannedImage) {
       alert("Please select one image");
       setIsLoading(true);
       return;
@@ -62,13 +69,11 @@ const Upload = () => {
       alert("Please select an end point first");
       setIsLoading(true);
       return;
-    }if(image){
-      fileUri = image
     }
-
-
-    else{
-      fileUri = scannedImage
+    if (image) {
+      fileUri = image;
+    } else {
+      fileUri = scannedImage;
     }
     setIsSubmitting(true);
     const fileInfo = await FileSystem.getInfoAsync(fileUri);
@@ -78,23 +83,22 @@ const Upload = () => {
       return;
     }
     const formData = new FormData();
-    if(image){
-    formData.append("image", {
-      uri: image,
-      type: "image/jpeg",
-      name: "image.jpg",
-    } as any);
-  }else if(scannedImage){
-    formData.append("image", {
-      uri: scannedImage,
-      type: "image/jpeg",
-      name: "image.jpg",
-    } as any);
-  }
+    if (image) {
+      formData.append("image", {
+        uri: image,
+        type: "image/jpeg",
+        name: "image.jpg",
+      } as any);
+    } else if (scannedImage) {
+      formData.append("image", {
+        uri: scannedImage,
+        type: "image/jpeg",
+        name: "image.jpg",
+      } as any);
+    }
     formData.append("electric", checked1 ? "true" : "false");
     formData.append("openDrain", checked2 ? "true" : "false");
     try {
-
       const response = await fetch(
         "https://pf-api-d8pu.onrender.com/upload-image",
         {
@@ -107,7 +111,6 @@ const Upload = () => {
           },
         }
       );
-
 
       if (!response.ok) {
         const errorData = await response.json();
@@ -177,7 +180,7 @@ const Upload = () => {
         ) : (
           <>
             <Image
-              source={{ uri: image||scannedImage }}
+              source={{ uri: image || scannedImage }}
               style={{ width: 100, height: 100, marginTop: 10 }}
             />
             <Text className="mt-6 text-white text-xs font-bold">{name}</Text>
@@ -248,20 +251,12 @@ const Upload = () => {
       >
         <Text className="text-center text-lg">Submit</Text>
       </TouchableOpacity>
-      {/* <TouchableOpacity
-      <TouchableOpacity
-        className="mt-5 h-10 flex justify-center items-center bg-gray-300 w-[95%] self-center text-center rounded-xl"
-        onPress={scanDocument}
-      >
-        <Text className="text-center text-lg">Document</Text>
-      </TouchableOpacity> */}
       {isSubmitting ? (
         <ActivityIndicator size="large" color="#0000ff" />
       ) : (
         <Text className="text-center text-lg">Submitted! Score </Text>
       )}
     </SafeAreaView>
-    
   );
 };
 
