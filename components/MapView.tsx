@@ -22,13 +22,14 @@ interface MapComponentProps {
   selectedLocation: Coordinate | null; // Add this prop
 }
 
-const MapComponent: React.FC<MapComponentProps> = React.memo(({
+const MapComponent: React.FC<MapComponentProps> = ({
   roadData,
   onMarkerPress,
   selectedLocation, // Add this prop
 }) => {
   // Function to get road color based on the score
   const getRoadColor = (score: number): string => {
+    // Normalize the score between 0 (green) and 100 (red)
     if (score <= 50) {
       const greenValue = Math.floor((score / 50) * 255); // From green to yellow
       return `rgb(255, ${greenValue}, 0)`;
