@@ -22,14 +22,13 @@ interface MapComponentProps {
   selectedLocation: Coordinate | null; // Add this prop
 }
 
-const MapComponent: React.FC<MapComponentProps> = ({
+const MapComponent: React.FC<MapComponentProps> = React.memo(({
   roadData,
   onMarkerPress,
   selectedLocation, // Add this prop
 }) => {
   // Function to get road color based on the score
   const getRoadColor = (score: number): string => {
-    // Normalize the score between 0 (green) and 100 (red)
     if (score <= 50) {
       const greenValue = Math.floor((score / 50) * 255); // From green to yellow
       return `rgb(255, ${greenValue}, 0)`;
@@ -117,14 +116,7 @@ const MapComponent: React.FC<MapComponentProps> = ({
     >
       {roadData.map((road: Road, index: number) => (
         <>
-          {selectedRoad && selectedRoad.id === road.id && (
-            <Polyline
-              coordinates={road.coordinates}
-              strokeColor="rgba(0, 0, 255, 0.7)" // Blue color for the outline
-              strokeWidth={6} // Slightly wider than the main Polyline
-              zIndex={1}
-            />
-          )}
+          
           <Polyline
             key={index}
             tappable={true}
@@ -135,7 +127,16 @@ const MapComponent: React.FC<MapComponentProps> = ({
               handlePolygonPress(road);
             }}
           />
+          {selectedRoad && selectedRoad.coordinates.latitude === road.coordinates.latitude && selectedRoad.coordinates.longitude === road.coordinates.longitude &&  (
+            <Polyline
+              coordinates={selectedRoad.coordinates!}
+              strokeColor="rgba(0, 0, 255, 0.7)" // Blue color for the outline
+              strokeWidth={6} // Slightly wider than the main Polyline
+              zIndex={1}
+            />
+          )}
         </>
+        
       ))}
     </MapView>
   );
