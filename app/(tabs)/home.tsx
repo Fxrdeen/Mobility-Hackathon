@@ -1,6 +1,7 @@
 import CustomButton from "@/components/CustomButton";
 import GoogleTextInput from "@/components/GoogleTextInput";
 import { icons } from "@/constants";
+import {Rating} from 'react-native-ratings';
 import { useEffect, useState } from "react";
 import { Text, TouchableOpacity, View } from "react-native";
 import ReactNativeModal from "react-native-modal";
@@ -37,7 +38,9 @@ const Home = () => {
   } | null>(null);
   const Lat = useStore((state: any) => state.Lat);
   const setLat = useStore((state: any) => state.setLat);
+  const [modalFinalRating, setModalFinalRating] = useState(0);
   const Lng = useStore((state: any) => state.Lng);
+  const [modalVisible, setModalVisible] = useState(true);
   const [modalAddress, setModalAddress] = useState("");
   const setLng = useStore((state: any) => state.setLng);
   const [ldata, setLdata] = useState([]);
@@ -117,12 +120,18 @@ const Home = () => {
           },
         ],
         score: item.score,
+        user_rating:item.user_rating
       });
     });
   }
 
   const handleModalData = (data: any) => {
     console.log("Selected data:", data);
+    let rscore = 1+((data.score/100)*4);
+    let finalscore = Math.round((data.user_rating *0.4) + (rscore*0.6));
+    console.log("model rating",rscore);
+    console.log("final score",finalscore, typeof finalscore);
+    setModalFinalRating(finalscore);
     setModalData(data!);
   };
   return (
@@ -130,7 +139,7 @@ const Home = () => {
       <View className="h-[80%] w-full mb-2">
         <MapComponent
           roadData={roadData}
-          selectedLocation={selectedLocation} // Pass selectedLocation to MapComponent
+          selectedLocation={selectedLocation}
           onMarkerPress={handleModalData}
         />
       </View>
@@ -150,28 +159,35 @@ const Home = () => {
           <Text className="text-white text-center text-2xl">Check Status</Text>
         </TouchableOpacity>
       </View>
-      {modalData && (
+      {modalData && modalFinalRating != 0 && (
+        <>
         <ReactNativeModal isVisible={showSuccessModal}>
           <View className="flex flex-col justify-center items-center bg-white px-7 py-9 rounded-2xl min-h-[300px]">
             <AntDesign name="earth" size={50} color="black" />
             <Text className="text-lg font-JakartaBold text-center mb-2 mt-4">
               Score of {modalAddress}:
             </Text>
-            <Text className="text-3xl  font-JakartaBold text-center mb-5">
-              {modalData.score}
-            </Text>
-            <Text className="text-base text-gray-400 font-JakartaBold text-center">
-              [{modalData.coordinates[0].latitude},
-              {modalData.coordinates[0].longitude}] - [
-              {modalData.coordinates[1].latitude},
-              {modalData.coordinates[1].longitude}]
+            <Rating 
+            type='star'
+            ratingCount={5}
+            readonly={true}
+            startingValue={modalFinalRating!}
+            ratingColor="#FFD700"
+            fractions={2}
+            jumpValue={0.5}
+            ratingBackgroundColor="#FFD700"
+            ratingTextColor="#FFD700"
+            />
+            <Text className="text-base text-gray-400 font-JakartaBold text-center mt-2">
+              The Footpath here is rated {modalFinalRating} out of 5 Stars.
             </Text>
             <Text
               className={`mt-2 mb-3 text-xl text-red-400 font-JakartaBold text-center ${
-                modalData.score < 50 ? "text-red-400" : "text-green-400"
+                modalFinalRating < 2.5 ? "text-red-400" : "text-green-400"
               }`}
+
             >
-              {modalData.score < 50
+              {modalFinalRating < 2.5
                 ? "Not Recommended to walk!"
                 : "Safe to walk!"}
             </Text>
@@ -180,11 +196,13 @@ const Home = () => {
               onPress={() => {
                 setShowSuccessModal(false);
                 setModalData(null);
+                setModalVisible(false);
               }}
               className="mt-5"
             />
           </View>
         </ReactNativeModal>
+        </>
       )}
     </SafeAreaView>
   );
