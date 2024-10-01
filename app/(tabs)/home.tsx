@@ -158,7 +158,7 @@ const Home = () => {
               Score of {modalAddress}:
             </Text>
             <Text className="text-3xl  font-JakartaBold text-center mb-5">
-              {modalData.score}
+              {(modalData.score)}
             </Text>
             <Text className="text-base text-gray-400 font-JakartaBold text-center">
               [{modalData.coordinates[0].latitude},
@@ -168,10 +168,10 @@ const Home = () => {
             </Text>
             <Text
               className={`mt-2 mb-3 text-xl text-red-400 font-JakartaBold text-center ${
-                modalData.score < 50 ? "text-red-400" : "text-green-400"
+                modalData.score < 2 ? "text-red-400" : "text-green-400"
               }`}
             >
-              {modalData.score < 50
+              {modalData.score < 2
                 ? "Not Recommended to walk!"
                 : "Safe to walk!"}
             </Text>
