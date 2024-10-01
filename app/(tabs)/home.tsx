@@ -12,6 +12,8 @@ import MapComponent from "@/components/MapView";
 import { getSupabase } from "@/server";
 import useStore from "@/store";
 import { useIsFocused } from "@react-navigation/native";
+import { Alert } from 'react-native';
+import { supabase } from "@/supabase";
 const roadData = [
   {
     coordinates: [
@@ -44,6 +46,10 @@ const Home = () => {
   const [modalAddress, setModalAddress] = useState("");
   const setLng = useStore((state: any) => state.setLng);
   const [ldata, setLdata] = useState([]);
+  const [modalVisible1, setModalVisible1] = useState(false);
+  const [userRating, setUserRating] = useState(0);
+  const [selectedMarker, setSelectedMarker] = useState(null);
+  const [RateAgain,setRateAgain] = useState(0);
   const [selectedLocation, setSelectedLocation] = useState<Coordinate | null>(
     null
   );
@@ -120,7 +126,8 @@ const Home = () => {
           },
         ],
         score: item.score,
-        user_rating:item.user_rating
+        user_rating:item.user_rating,
+        id: item.id
       });
     });
   }
@@ -133,6 +140,29 @@ const Home = () => {
     console.log("final score",finalscore, typeof finalscore);
     setModalFinalRating(finalscore);
     setModalData(data!);
+  };
+  const submitRating = async() => {
+    console.log(`Rating for footpath : ${userRating}`);
+    console.log(modalData.id);
+    const roadid = modalData.id;
+    const updatedData = {
+      user_rating: userRating,
+    };
+    //console.log(road);
+    // Update the rating in Supabase
+    const { data, error } = await supabase
+      .from('location-footpath') // Replace with your actual table name
+      .update(updatedData)
+      .match({ id: roadid}); // Adjust this match condition based on your table structure
+
+    if (error) {
+      throw error; // Handle the error as needed
+    }
+    // Here you can handle what happens with the rating (e.g., update the database, etc.)
+    setModalVisible1(false);  // Close the modal after submitting the rating
+    Alert.alert("Thank you!", `You rated the footpath: ${userRating}`);
+
+
   };
   return (
     <SafeAreaView className="flex-1 bg-[#121212] p-5">
@@ -192,6 +222,14 @@ const Home = () => {
                 : "Safe to walk!"}
             </Text>
             <CustomButton
+            title="Rate Again"
+            onPress={()=>{
+              setModalVisible1(true);
+              setRateAgain(1);
+              setModalVisible(false);
+            }}
+            />
+            <CustomButton
               title="Close"
               onPress={() => {
                 setShowSuccessModal(false);
@@ -202,6 +240,35 @@ const Home = () => {
             />
           </View>
         </ReactNativeModal>
+        {RateAgain === 1 && (
+        <ReactNativeModal isVisible={modalVisible1}>
+          <View className="flex flex-col justify-center items-center bg-white px-7 py-9 rounded-2xl min-h-[300px]">
+            <Text className="text-lg font-JakartaBold text-center mb-2 mt-4">
+              Rate this Footpath
+            </Text>
+            <Rating 
+              showRating
+              type='star'
+              ratingCount={5}
+              startingValue={userRating}
+              ratingColor="#FFD700"
+              fractions={2}
+              jumpValue={0.5}
+              onFinishRating={(rating: number) => setUserRating(rating)}
+            />
+            <CustomButton
+              title="Submit"
+              onPress={submitRating}
+              className="mt-5"
+            />
+            <CustomButton
+              title="Close"
+              onPress={() => setModalVisible1(false)}
+              className="mt-5"
+            />
+          </View>
+        </ReactNativeModal>
+      )}
         </>
       )}
     </SafeAreaView>
