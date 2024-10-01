@@ -90,6 +90,7 @@ const MapComponent: React.FC<MapComponentProps> = ({
     }
   }, [selectedLocation]); // Update region when selectedLocation changes
 
+
   const handlePolygonPress = (road: Road) => {
     setSelectedRoad(road);
     onMarkerPress(road);
@@ -102,6 +103,8 @@ const MapComponent: React.FC<MapComponentProps> = ({
       </View>
     );
   }
+
+  
   return (
     <MapView
       provider={PROVIDER_DEFAULT}
@@ -116,8 +119,7 @@ const MapComponent: React.FC<MapComponentProps> = ({
       showsUserLocation={true}
     >
       {roadData.map((road: Road, index: number) => (
-        <>
-          
+          <View key={index}>
           <Polyline
             key={index}
             tappable={true}
@@ -128,16 +130,16 @@ const MapComponent: React.FC<MapComponentProps> = ({
               handlePolygonPress(road);
             }}
           />
-          {selectedRoad && selectedRoad.coordinates.latitude === road.coordinates.latitude && selectedRoad.coordinates.longitude === road.coordinates.longitude &&  (
+          {selectedRoad && selectedRoad.coordinates.latitude === road.coordinates.latitude && selectedRoad.coordinates.longitude === road.coordinates.longitude && (
             <Polyline
+              
               coordinates={selectedRoad.coordinates!}
               strokeColor="rgba(0, 0, 255, 0.7)" // Blue color for the outline
               strokeWidth={6} // Slightly wider than the main Polyline
               zIndex={1}
             />
           )}
-        </>
-        
+        </View>
       ))}
     </MapView>
   );
