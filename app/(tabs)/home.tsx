@@ -36,6 +36,7 @@ const Home = () => {
     latitude: number;
     longitude: number;
   } | null>(null);
+  const googlePlacesApiKey = Constants.expoConfig?.extra?.EXPO_PUBLIC_GOOGLE_API_KEY
   const Lat = useStore((state: any) => state.Lat);
   const setLat = useStore((state: any) => state.setLat);
   const [modalFinalRating, setModalFinalRating] = useState(0);
@@ -90,7 +91,7 @@ const Home = () => {
   ) => {
     try {
       const response = await fetch(
-        `https://maps.googleapis.com/maps/api/geocode/json?latlng=${latitude},${longitude}&key=${process.env.EXPO_PUBLIC_GOOGLE_API_KEY}`
+        `https://maps.googleapis.com/maps/api/geocode/json?latlng=${latitude},${longitude}&key=${googlePlacesApiKey}`
       );
       const data = await response.json();
 

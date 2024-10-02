@@ -4,7 +4,7 @@ import Constants from 'expo-constants';
 import { useState } from "react";
 import { View, Text, Image  } from "react-native";
 import { GooglePlacesAutocomplete } from "react-native-google-places-autocomplete";
-const googlePlacesApiKey = process.env.EXPO_PUBLIC_GOOGLE_API_KEY;
+const googlePlacesApiKey = Constants.expoConfig?.extra?.EXPO_PUBLIC_GOOGLE_API_KEY;
 const GoogleTextInput = ({
   icon,
   initialLocation,
