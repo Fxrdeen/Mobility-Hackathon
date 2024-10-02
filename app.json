@@ -1,7 +1,7 @@
 {
   "expo": {
-    "name": "Mobility-Hackathon",
-    "slug": "Mobility-Hackathon",
+    "name": "PathFinder",
+    "slug": "PathFinder",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/images/icon1.png",
