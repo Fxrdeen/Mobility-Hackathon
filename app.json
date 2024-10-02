@@ -53,7 +53,7 @@
       "eas": {
         "projectId": "bbbae136-c8af-4f68-8916-13fe61f51e10"
       },
-      "GOOGLE_MAPS_API_KEY": "AIzaSyC8ZPSlmQmGQ3yowTg0bz5agaW302vC0wg",
+      "EXPO_PUBLIC_GOOGLE_API_KEY": "AIzaSyC8ZPSlmQmGQ3yowTg0bz5agaW302vC0wg",
       "router": {
         "origin": false
       }
