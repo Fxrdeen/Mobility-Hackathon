@@ -24,7 +24,13 @@
       "permissions": [
         "android.permission.RECORD_AUDIO"
       ],
-      "package": "com.anonymous.MobilityHackathon"
+      "package": "com.anonymous.MobilityHackathon",
+      "config": {
+        "googleMaps": {
+          "apiKey": "AIzaSyC8ZPSlmQmGQ3yowTg0bz5agaW302vC0wg"
+        }
+      }
+
     },
     "web": {
       "bundler": "metro",
