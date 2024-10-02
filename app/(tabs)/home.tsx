@@ -2,6 +2,7 @@ import CustomButton from "@/components/CustomButton";
 import GoogleTextInput from "@/components/GoogleTextInput";
 import { icons } from "@/constants";
 import {Rating} from 'react-native-ratings';
+import { Dialog, Button } from "@rneui/themed";
 import { useEffect, useState } from "react";
 import { Text, TouchableOpacity, View } from "react-native";
 import ReactNativeModal from "react-native-modal";
@@ -49,6 +50,7 @@ const Home = () => {
   const [modalVisible1, setModalVisible1] = useState(false);
   const [userRating, setUserRating] = useState(0);
   const [selectedMarker, setSelectedMarker] = useState(null);
+  const [extraRatingAdded, setExtraRatingAdded] = useState(false);
   const [RateAgain,setRateAgain] = useState(0);
   const [selectedLocation, setSelectedLocation] = useState<Coordinate | null>(
     null
@@ -160,7 +162,8 @@ const Home = () => {
     }
     // Here you can handle what happens with the rating (e.g., update the database, etc.)
     setModalVisible1(false);  // Close the modal after submitting the rating
-    Alert.alert("Thank you!", `You rated the footpath: ${userRating}`);
+    Alert.alert("Rating Submitted!");
+    setExtraRatingAdded(true);
 
 
   };
@@ -252,8 +255,6 @@ const Home = () => {
               ratingCount={5}
               startingValue={userRating}
               ratingColor="#FFD700"
-              fractions={2}
-              jumpValue={0.5}
               onFinishRating={(rating: number) => setUserRating(rating)}
             />
             <CustomButton
@@ -270,6 +271,15 @@ const Home = () => {
         </ReactNativeModal>
       )}
         </>
+      )}
+      {extraRatingAdded && (
+        <Dialog isVisible={true} onBackdropPress={() => setExtraRatingAdded(false)}>
+          <Dialog.Title title="Thank you!" />
+          <Text>
+            Your rating has been submitted.
+          </Text>
+          <Dialog.Button title="Close" onPress={() => setExtraRatingAdded(false)} />
+        </Dialog>
       )}
     </SafeAreaView>
   );
