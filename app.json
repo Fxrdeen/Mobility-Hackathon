@@ -1,10 +1,10 @@
 {
   "expo": {
-    "name": "Mobility-Hackathon",
+    "name": "PathFinder",
     "slug": "Mobility-Hackathon",
     "version": "1.0.0",
     "orientation": "portrait",
-    "icon": "./assets/images/icon1.png",
+    "icon": "./assets/images/logo.png",
     "scheme": "myapp",
     "userInterfaceStyle": "automatic",
     "splash": {
@@ -18,7 +18,7 @@
     },
     "android": {
       "adaptiveIcon": {
-        "foregroundImage": "./assets/images/Adaptive-icon.png",
+        "foregroundImage": "./assets/images/logo.png",
         "backgroundColor": "#ffffff"
       },
       "permissions": [
@@ -30,12 +30,12 @@
           "apiKey": "AIzaSyC8ZPSlmQmGQ3yowTg0bz5agaW302vC0wg"
         }
       }
-    },
 
+    },
     "web": {
       "bundler": "metro",
       "output": "static",
-      "favicon": "./assets/images/fav-icon.png"
+      "favicon": "./assets/images/logo.png"
     },
     "plugins": [
       "expo-router",
@@ -59,14 +59,22 @@
       "eas": {
         "projectId": "bbbae136-c8af-4f68-8916-13fe61f51e10"
       },
-      "GOOGLE_MAPS_API_KEY": "AIzaSyC8ZPSlmQmGQ3yowTg0bz5agaW302vC0wg"
-
+      "EXPO_PUBLIC_GOOGLE_API_KEY": "AIzaSyC8ZPSlmQmGQ3yowTg0bz5agaW302vC0wg",
+      "router": {
+        "origin": false
+      }
     },
     "runtimeVersion": {
       "policy": "appVersion"
     },
     "updates": {
       "url": "https://u.expo.dev/bbbae136-c8af-4f68-8916-13fe61f51e10"
-    }
+    },
+    "sdkVersion": "51.0.0",
+    "platforms": [
+      "ios",
+      "android",
+      "web"
+    ]
   }
 }
