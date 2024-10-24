@@ -21,6 +21,7 @@
     "@rneui/base": "^4.0.0-rc.8",
     "@rneui/themed": "^4.0.0-rc.8",
     "@supabase/supabase-js": "^2.45.4",
+    "base64-arraybuffer": "^1.0.2",
     "eas-cli": "^12.5.1",
     "expo": "~51.0.34",
     "expo-constants": "~16.0.2",
