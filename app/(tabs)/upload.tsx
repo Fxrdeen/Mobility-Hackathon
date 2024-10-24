@@ -14,7 +14,7 @@ import * as FileSystem from "expo-file-system";
 import * as ImagePicker from "expo-image-picker";
 import { supabase } from "@/supabase";
 import useStore from "@/store";
-import MapView, { Marker } from "react-native-maps";
+import MapView, { Marker, PROVIDER_DEFAULT } from "react-native-maps";
 import AntDesign from "@expo/vector-icons/AntDesign";
 import { ActivityIndicator } from "react-native";
 import { CheckBox } from "@rneui/themed";
@@ -38,6 +38,11 @@ const Upload = () => {
   const [locdone, setLocDone] = useState<boolean>(false);
   const [imgdone, setImgDone] = useState<boolean>(false);
   const [rating, setRating] = useState<number>(0);
+  const [simage, setSimage] = useState<ImagePicker.ImagePickerAsset | null>(
+    null
+  );
+
+  const [imageUrl, setImageUrl] = useState<string | null>(null);
   const nav = useNavigation();
   const pickImage = async () => {
     let result = await ImagePicker.launchImageLibraryAsync({
@@ -56,6 +61,7 @@ const Upload = () => {
       setImage(result.assets[0].uri);
       setName(fileName!);
       setIsLoading(true);
+      setSimage(result.assets[0]);
     }
     setImgDone(true);
   };
@@ -133,6 +139,30 @@ const Upload = () => {
       setIsLoading(false);
       const dat = await response.json();
       setReviewResult(dat.Percentage);
+      let url = "";
+      if (simage) {
+        const arrayBuffer = await fetch(simage.uri).then((res) =>
+          res.arrayBuffer()
+        );
+        const fileExt = simage.uri.split(".").pop();
+        const fileName = `${Date.now()}.${fileExt}`;
+        const { data: sdata, error } = await supabase.storage
+          .from("footpath-images")
+          .upload(fileName, arrayBuffer, {
+            contentType: simage?.mimeType || "image/jpeg",
+          });
+        if (error) {
+          console.error("Error uploading image:", error);
+          alert("Error uploading image");
+          setIsSubmitting(false);
+          return;
+        }
+        const { data: publicUrlData } = await supabase.storage
+          .from("footpath-images")
+          .getPublicUrl(sdata.path);
+        url = publicUrlData.publicUrl;
+        console.log("Image URL: ", url);
+      }
 
       const { data, error } = await supabase
         .from("location-footpath")
@@ -144,6 +174,7 @@ const Upload = () => {
             latitude_end: endPoint.latitude,
             longitude_end: endPoint.longitude,
             user_rating: rating,
+            image_link: url,
           },
         ])
         .select();
@@ -178,7 +209,7 @@ const Upload = () => {
 
   const [location, setLocation] = useState(null);
   const [loading, setLoading] = useState(true);
-  const handleMapPress = (event) => {
+  const handleMapPress = (event: any) => {
     setEndPoint(event.nativeEvent.coordinate);
   };
   const scanDocument = async () => {
@@ -191,7 +222,7 @@ const Upload = () => {
       setImgDone(true);
     }
   };
-  const ratingCompleted = (rating) => {
+  const ratingCompleted = (rating: number) => {
     //console.log("Rating: "+rating);
     setRating(rating);
     setImgDone(true);
@@ -284,7 +315,7 @@ const Upload = () => {
             </Text>
           </Text>
           <MapView
-            provider={"google"}
+            provider={PROVIDER_DEFAULT}
             style={{ flex: 1, marginTop: 10 }}
             initialRegion={{
               latitude: slatitude,
@@ -323,26 +354,25 @@ const Upload = () => {
           </TouchableOpacity>
         </>
       )}
-      
+
       {procDone && (
-            <Dialog
-              isVisible={procDone}
-              onBackdropPress={() => {
-                setProcDone(false);
-                router.navigate("/(tabs)/home");
-              }}
-            >
-              <Dialog.Title title="Success!" />
-              <Text>Image with Score Uploaded Successfully!</Text>
-              <Button 
-                title="Close" 
-                onPress={() => {
-                  setProcDone(false);
-                  router.navigate("/(tabs)/home");
-                }} 
-                buttonStyle={{ alignSelf: 'flex-end', width: 100, height: 40 }}
-              /> 
-        
+        <Dialog
+          isVisible={procDone}
+          onBackdropPress={() => {
+            setProcDone(false);
+            router.navigate("/(tabs)/home");
+          }}
+        >
+          <Dialog.Title title="Success!" />
+          <Text>Image with Score Uploaded Successfully!</Text>
+          <Button
+            title="Close"
+            onPress={() => {
+              setProcDone(false);
+              router.navigate("/(tabs)/home");
+            }}
+            buttonStyle={{ alignSelf: "flex-end", width: 100, height: 40 }}
+          />
         </Dialog>
       )}
     </SafeAreaView>
@@ -353,7 +383,6 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
   },
-
 });
 
 export default Upload;
