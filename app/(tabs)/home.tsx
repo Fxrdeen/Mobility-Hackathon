@@ -15,7 +15,8 @@ import useStore from "@/store";
 import { useIsFocused } from "@react-navigation/native";
 import { Alert } from "react-native";
 import { supabase } from "@/supabase";
-import { ActivityIndicator } from 'react-native';
+import { ActivityIndicator } from "react-native";
+import { Image } from "react-native";
 
 const roadData = [
   {
@@ -26,7 +27,7 @@ const roadData = [
     score: 80,
     user_rating: 4,
     id: 1,
-  }
+  },
 ];
 const Home = () => {
   const [location, setLocation] = useState("");
@@ -36,7 +37,8 @@ const Home = () => {
     latitude: number;
     longitude: number;
   } | null>(null);
-  const googlePlacesApiKey = Constants.expoConfig?.extra?.EXPO_PUBLIC_GOOGLE_API_KEY
+  const googlePlacesApiKey =
+    Constants.expoConfig?.extra?.EXPO_PUBLIC_GOOGLE_API_KEY;
   const Lat = useStore((state: any) => state.Lat);
   const setLat = useStore((state: any) => state.setLat);
   const [modalFinalRating, setModalFinalRating] = useState(0);
@@ -56,6 +58,7 @@ const Home = () => {
   const [selectedLocation, setSelectedLocation] = useState<Coordinate | null>(
     null
   );
+  const [modalImageUrl, setModalImageUrl] = useState("");
   const isFocused = useIsFocused();
   const onPress = () => setShowSuccessModal(true);
   const road = getSupabase();
@@ -65,7 +68,6 @@ const Home = () => {
       setLdata(road);
     };
     if (isFocused) {
-
       func();
     }
     if (reloadmap == true) {
@@ -83,6 +85,9 @@ const Home = () => {
     if (modalData != null) {
       func2();
     }
+    // if (modalData != null && modalImageUrl == "") {
+    //   getImageUrl(modalData.id);
+    // }
   }, [modalData, isFocused]);
 
   const getAddressFromCoordinates = async (
@@ -107,7 +112,8 @@ const Home = () => {
       return null;
     }
   };
-  const sleep = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
+  const sleep = (ms: number) =>
+    new Promise((resolve) => setTimeout(resolve, ms));
   const handleLocationSelect = (coords: {
     latitude: number;
     longitude: number;
@@ -143,7 +149,13 @@ const Home = () => {
       });
     }
   }, [ldata, reloadmap]);
-
+  const getImageUrl = async (id: number) => {
+    const { data } = await supabase
+      .from("location-footpath")
+      .select("image_link")
+      .eq("id", id);
+    return data![0].image_link;
+  };
   const handleModalData = (data: any) => {
     console.log("Selected data:", data);
     let rscore = 1 + (data.score / 100) * 4;
@@ -153,6 +165,10 @@ const Home = () => {
     console.log("final score", finalscore, typeof finalscore);
     setModalFinalRating(finalscore);
     setModalData(data!);
+    getImageUrl(data.id).then((imageUrl) => {
+      console.log("Image URL: ", imageUrl);
+      setModalImageUrl(imageUrl);
+    });
   };
   const submitRating = async () => {
     console.log(`Rating for footpath : ${userRating}`);
@@ -180,145 +196,160 @@ const Home = () => {
       {loading ? (
         <View className="flex-1 justify-center items-center">
           <ActivityIndicator size={100} color="#FFFFFF" />
-          <Text className="text-white text-center text-2xl mb-2">Loading...</Text>
-        </View>
-      ) : ( <>
-      <View className="h-[80%] w-full mb-2">
-        <Text className="text-white text-center text-2xl mb-2">Map View</Text>
-        <MapComponent
-          roadData={roadData}
-          selectedLocation={selectedLocation}
-          onMarkerPress={handleModalData}
-        />
-      </View>
-      <GoogleTextInput
-        containerStyle="bg-neutral-100"
-        textInputBackgroundColor="transparent"
-        icon={icons.map}
-        handlePress={() => {}}
-        onLocationSelect={handleLocationSelect}
-      />
-      <Text className="text-2xl">{location}</Text>
-      <View className="flex items-center justify-center">
-        <TouchableOpacity
-          onPress={onPress}
-          className="flex justify-center items-center bg-gray-400 rounded-xl w-44 h-[70px] mt-[-30px]"
-        >
-          <Text className="text-white text-center text-2xl font-JakartaBold">
-            Check Status
+          <Text className="text-white text-center text-2xl mb-2">
+            Loading...
           </Text>
-        </TouchableOpacity>
-      </View>
-      {modalData && modalFinalRating != 0 && (
+        </View>
+      ) : (
         <>
-          <ReactNativeModal isVisible={showSuccessModal}>
-            <View className="flex flex-col justify-center items-center bg-white px-7 py-9 rounded-2xl min-h-[300px]">
-              <AntDesign name="earth" size={50} color="black" />
-              <Text className="text-lg font-JakartaBold text-center mb-2 mt-4">
-                Score of {modalAddress}:
+          <View className="h-[80%] w-full mb-2">
+            <Text className="text-white text-center text-2xl mb-2">
+              Map View
+            </Text>
+            <MapComponent
+              roadData={roadData}
+              selectedLocation={selectedLocation}
+              onMarkerPress={handleModalData}
+            />
+          </View>
+          <GoogleTextInput
+            containerStyle="bg-neutral-100"
+            textInputBackgroundColor="transparent"
+            icon={icons.map}
+            handlePress={() => {}}
+            onLocationSelect={handleLocationSelect}
+          />
+          <Text className="text-2xl">{location}</Text>
+          <View className="flex items-center justify-center">
+            <TouchableOpacity
+              onPress={onPress}
+              className="flex justify-center items-center bg-gray-400 rounded-xl w-44 h-[70px] mt-[-30px]"
+            >
+              <Text className="text-white text-center text-2xl font-JakartaBold">
+                Check Status
               </Text>
-              <Rating
-                type="star"
-                ratingCount={5}
-                readonly={true}
-                startingValue={modalFinalRating!}
-                ratingColor="#FFD700"
-                fractions={2}
-                jumpValue={0.5}
-                ratingBackgroundColor="#FFD700"
-                ratingTextColor="#FFD700"
-              />
-              <Text className="text-base text-gray-400 font-JakartaBold text-center mt-2">
-                The Footpath here is rated {modalFinalRating} out of 5 Stars.
+            </TouchableOpacity>
+          </View>
+          {modalData && modalFinalRating != 0 && (
+            <>
+              <ReactNativeModal isVisible={showSuccessModal}>
+                <View className="flex flex-col justify-center items-center bg-white px-7 py-9 rounded-2xl min-h-[300px]">
+                  <AntDesign name="earth" size={50} color="black" />
+                  <Text className="text-lg font-JakartaBold text-center mb-2 mt-4">
+                    Score of {modalAddress}:
+                  </Text>
+                  <Rating
+                    type="star"
+                    ratingCount={5}
+                    readonly={true}
+                    startingValue={modalFinalRating!}
+                    ratingColor="#FFD700"
+                    fractions={2}
+                    jumpValue={0.5}
+                    ratingBackgroundColor="#FFD700"
+                    ratingTextColor="#FFD700"
+                  />
+                  <Text className="text-base text-gray-400 font-JakartaBold text-center mt-2">
+                    The Footpath here is rated {modalFinalRating} out of 5
+                    Stars.
+                  </Text>
+                  <Text
+                    className={`mt-2 mb-3 text-xl text-red-400 font-JakartaBold text-center ${
+                      modalFinalRating < 2.5 ? "text-red-400" : "text-green-400"
+                    }`}
+                  >
+                    {modalFinalRating < 2.5
+                      ? "Not Recommended to walk!"
+                      : "Safe to walk!"}
+                  </Text>
+
+                  {modalImageUrl && (
+                    <Image
+                      source={{ uri: modalImageUrl }}
+                      className=" w-full h-48 rounded-lg mb-5"
+                      resizeMode="contain"
+                    />
+                  )}
+
+                  <CustomButton
+                    title="Rate Again"
+                    onPress={() => {
+                      setModalVisible1(true);
+                      setRateAgain(1);
+                      setModalVisible(false);
+                    }}
+                  />
+                  <CustomButton
+                    title="Close"
+                    onPress={() => {
+                      setShowSuccessModal(false);
+                      setModalData(null);
+                      setModalVisible(false);
+                    }}
+                    className="mt-5"
+                  />
+                </View>
+              </ReactNativeModal>
+              {RateAgain === 1 && (
+                <ReactNativeModal isVisible={modalVisible1}>
+                  <View className="flex flex-col justify-center items-center bg-white px-7 py-9 rounded-2xl min-h-[300px]">
+                    <Text className="text-lg font-JakartaBold text-center mb-2 mt-4">
+                      Rate this Footpath
+                    </Text>
+                    <Rating
+                      showRating
+                      type="star"
+                      ratingCount={5}
+                      startingValue={userRating}
+                      ratingColor="#FFD700"
+                      onFinishRating={(rating: number) => setUserRating(rating)}
+                    />
+                    <CustomButton
+                      title="Submit"
+                      onPress={submitRating}
+                      className="mt-5"
+                    />
+                    <CustomButton
+                      title="Close"
+                      onPress={() => {
+                        setUserRating(0);
+                        setModalVisible(false);
+                        setModalVisible1(false);
+                        setShowSuccessModal(false);
+                      }}
+                      className="mt-5"
+                    />
+                  </View>
+                </ReactNativeModal>
+              )}
+            </>
+          )}
+          {extraRatingAdded && (
+            <Dialog isVisible={true}>
+              <Dialog.Title title="Thank you!" />
+              <Text className="text-center text-lg font-JakartaBold">
+                Your rating has been submitted.
               </Text>
               <Text
-                className={`mt-2 mb-3 text-xl text-red-400 font-JakartaBold text-center ${
-                  modalFinalRating < 2.5 ? "text-red-400" : "text-green-400"
-                }`}
-              >
-                {modalFinalRating < 2.5
-                  ? "Not Recommended to walk!"
-                  : "Safe to walk!"}
-              </Text>
-              <CustomButton
-                title="Rate Again"
-                onPress={() => {
-                  setModalVisible1(true);
-                  setRateAgain(1);
-                  setModalVisible(false);
+                style={{
+                  color: "blue",
+                  textAlign: "right",
                 }}
-              />
-              <CustomButton
-                title="Close"
                 onPress={() => {
+                  setExtraRatingAdded(false);
+                  setModalVisible1(false);
+                  setUserRating(0);
+                  setModalVisible(false);
                   setShowSuccessModal(false);
-                  setModalData(null);
-                  setModalVisible(false);
+                  setReloadmap(true);
                 }}
-                className="mt-5"
-              />
-            </View>
-          </ReactNativeModal>
-          {RateAgain === 1 && (
-            <ReactNativeModal isVisible={modalVisible1}>
-              <View className="flex flex-col justify-center items-center bg-white px-7 py-9 rounded-2xl min-h-[300px]">
-                <Text className="text-lg font-JakartaBold text-center mb-2 mt-4">
-                  Rate this Footpath
-                </Text>
-                <Rating
-                  showRating
-                  type="star"
-                  ratingCount={5}
-                  startingValue={userRating}
-                  ratingColor="#FFD700"
-                  onFinishRating={(rating: number) => setUserRating(rating)}
-                />
-                <CustomButton
-                  title="Submit"
-                  onPress={submitRating}
-                  className="mt-5"
-                />
-                <CustomButton
-                  title="Close"
-                    onPress={() => {
-                      setUserRating(0);
-                      setModalVisible(false);
-                      setModalVisible1(false);
-                      setShowSuccessModal(false);
-                    }}
-                  className="mt-5"
-                />
-              </View>
-            </ReactNativeModal>
+              >
+                Close
+              </Text>
+            </Dialog>
           )}
         </>
       )}
-      {extraRatingAdded && (
-        <Dialog isVisible={true}>
-          <Dialog.Title title="Thank you!" />
-          <Text className="text-center text-lg font-JakartaBold">
-            Your rating has been submitted.
-          </Text>
-          <Text
-            style={{
-              color: 'blue',
-              textAlign: 'right'
-            }}
-            onPress={() => {
-              setExtraRatingAdded(false);
-              setModalVisible1(false);
-              setUserRating(0);
-              setModalVisible(false);
-              setShowSuccessModal(false);
-              setReloadmap(true);
-            }}
-          >
-            Close
-          </Text>
-        </Dialog>
-      )}
-      </>
-    )}
     </SafeAreaView>
   );
 };
