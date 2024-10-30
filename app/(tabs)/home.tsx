@@ -377,6 +377,16 @@ const Home = () => {
                         </>
                       ))}
                     </ScrollView>
+                    <CustomButton
+                      title="Close"
+                      onPress={() => {
+                        setUserRating(0);
+                        setModalVisible(false);
+                        setModalVisible2(false);
+                        setShowSuccessModal(true);
+                      }}
+                      className="mt-5"
+                    />
                   </SafeAreaView>
                 </ReactNativeModal>
 
