@@ -4,7 +4,7 @@ import { icons } from "@/constants";
 import { Rating } from "react-native-ratings";
 import { Dialog, Button } from "@rneui/themed";
 import { useEffect, useState } from "react";
-import { Text, TouchableOpacity, View } from "react-native";
+import { ScrollView, Text, TouchableOpacity, View } from "react-native";
 import ReactNativeModal from "react-native-modal";
 import { SafeAreaView } from "react-native-safe-area-context";
 import AntDesign from "@expo/vector-icons/AntDesign";
@@ -17,6 +17,7 @@ import { Alert } from "react-native";
 import { supabase } from "@/supabase";
 import { ActivityIndicator } from "react-native";
 import { Image } from "react-native";
+import React from "react";
 
 const roadData = [
   {
@@ -46,11 +47,12 @@ const Home = () => {
   const [modalVisible, setModalVisible] = useState(true);
   const [modalAddress, setModalAddress] = useState("");
   const [loading, setLoading] = useState(true);
-
+  const [showimages, setshowimages] = useState(0);
   const [reloadmap, setReloadmap] = useState(false);
   const setLng = useStore((state: any) => state.setLng);
   const [ldata, setLdata] = useState([]);
   const [modalVisible1, setModalVisible1] = useState(false);
+  const [modalVisible2, setModalVisible2] = useState(false);
   const [userRating, setUserRating] = useState(0);
   const [selectedMarker, setSelectedMarker] = useState(null);
   const [extraRatingAdded, setExtraRatingAdded] = useState(false);
@@ -58,6 +60,7 @@ const Home = () => {
   const [selectedLocation, setSelectedLocation] = useState<Coordinate | null>(
     null
   );
+  const [Links, setLinks] = useState<{ image_link: string | null }[]>([]);
   const [modalImageUrl, setModalImageUrl] = useState("");
   const isFocused = useIsFocused();
   const onPress = () => setShowSuccessModal(true);
@@ -191,6 +194,21 @@ const Home = () => {
     setModalVisible1(false); // Close the modal after submitting the rating
     setExtraRatingAdded(true);
   };
+  const fetchLinks = async () => {
+    console.log(modalData.id)
+    const { data, error } = await supabase
+      .from('location-footpath')
+      .select('image_link')
+      .eq('id', modalData.id); 
+
+    if (error) {
+      console.error('Error fetching data:', error);
+    } else {
+      console.log("Success!!!")
+    }
+    console.log('Supabase response data:', data);
+    return data;
+  };
   return (
     <SafeAreaView className="flex-1 bg-[#121212] p-5">
       {loading ? (
@@ -279,6 +297,20 @@ const Home = () => {
                       setModalVisible(false);
                     }}
                   />
+                    <CustomButton
+                    title="View Images"
+                    onPress={() => {
+                      fetchLinks().then((res)=>{
+                        console.log("Fetched link:",res)
+                        setLinks(res!);
+                        setshowimages(1);
+                        setModalVisible2(true);
+                        setModalVisible(false);
+                      }
+                      );
+                      
+                    }}
+                  />
                   <CustomButton
                     title="Close"
                     onPress={() => {
@@ -321,6 +353,33 @@ const Home = () => {
                     />
                   </View>
                 </ReactNativeModal>
+              )}
+                {showimages === 1 && (
+                  <ReactNativeModal isVisible={modalVisible2}>
+                  <SafeAreaView style={{ flex: 1 }} className="flex flex-col justify-center items-center bg-white px-7 py-9 rounded-2xl min-h-[300px]">
+                    <Text className="text-lg font-JakartaBold text-center mb-4">
+                      Footpath Images
+                    </Text>
+                    <ScrollView style={{ flexGrow: 1 }} className="px-7 py-9">
+                      <Text className="text-lg font-JakartaBold text-center mb-4">
+                        The Footpath
+                        </Text>
+                      {Links?.map((link, index) => (
+                        <>
+                        <React.Fragment key={index}>
+                        <Image
+                          key={index} 
+                          source={{ uri: link.image_link }}
+                          className="w-full h-48 rounded-lg mb-5"
+                          resizeMode="contain"
+                        />
+                        </React.Fragment>
+                        </>
+                      ))}
+                    </ScrollView>
+                  </SafeAreaView>
+                </ReactNativeModal>
+
               )}
             </>
           )}
